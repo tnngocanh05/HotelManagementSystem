@@ -1,0 +1,84 @@
+﻿<Window x:Class="HotelManagement.GUI.Dialogs.ThanhToanDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thanh toán"
+        Height="500"
+        Width="650"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F5FBFB">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="THANH TOÁN HÓA ĐƠN"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Foreground="#0F4C5C"
+                   Margin="0,0,0,20"/>
+
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="10"
+                Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Mã đặt phòng:" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtMaDatPhong" Grid.Column="1" IsReadOnly="True"/>
+
+                <TextBlock Text="Tiền phòng:" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtTienPhong" Grid.Row="1" Grid.Column="1" IsReadOnly="True"/>
+
+                <TextBlock Text="Tiền dịch vụ:" Grid.Row="2" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtTienDichVu" Grid.Row="2" Grid.Column="1" IsReadOnly="True"/>
+
+                <TextBlock Text="Tổng tiền:" Grid.Row="3" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtTongTien" Grid.Row="3" Grid.Column="1" IsReadOnly="True"
+                         FontWeight="Bold"/>
+
+                <TextBlock Text="Phương thức thanh toán:" Grid.Row="4" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cbPhuongThuc" Grid.Row="4" Grid.Column="1"/>
+
+                <TextBlock x:Name="lblTienKhachDua" Text="Tiền khách đưa:" Grid.Row="5" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtTienKhachDua" Grid.Row="5" Grid.Column="1"/>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,0">
+            <Button x:Name="btnTinhTienThua"
+                    Content="Tính tiền thừa"
+                    Width="130"
+                    Margin="10,0"/>
+
+            <Button x:Name="btnXacNhan"
+                    Content="Xác nhận thanh toán"
+                    Width="160"
+                    Margin="10,0"/>
+
+            <Button x:Name="btnDong"
+                    Content="Đóng"
+                    Width="120"
+                    Margin="10,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="HUONG_DAN_GIT_NHOM.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Class Library (.NET Framework)/HotelManagement.BLL.csproj" Id="7b546b61-5b0a-48f5-9b10-a44c9fee53ef" />
+  <Project Path="HotelManagement.DAL/HotelManagement.DAL.csproj" Id="e315dbca-7197-48f3-b021-0c5d183addb9" />
+  <Project Path="HotelManagement.DTO/HotelManagement.DTO.csproj" Id="899239b2-adf2-48c8-a6f5-c191f9551ba6" />
+  <Project Path="HotelManagement.GUI/HotelManagement.GUI.csproj" Id="0e18a22f-3c32-4f0f-a048-755169cf5c3d" />
+</Solution>
