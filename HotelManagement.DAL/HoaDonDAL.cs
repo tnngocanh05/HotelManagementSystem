@@ -10,7 +10,137 @@ namespace HotelManagement.DAL
         private DBConnection db = new DBConnection();
 
         // =========================
-        // 1. LẤY TOÀN BỘ DANH SÁCH HÓA ĐƠN
+        // 1. TẠO SỐ HÓA ĐƠN MỚI
+        // =========================
+        public string TaoSoHoaDonMoi()
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string query = "SELECT ISNULL(MAX(MaHoaDon), 0) + 1 FROM HoaDon";
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                int nextNumber = Convert.ToInt32(cmd.ExecuteScalar());
+                return "HD" + nextNumber.ToString("000");
+            }
+        }
+
+        // =========================
+        // 2. TẠO HÓA ĐƠN NGAY KHI ĐẶT PHÒNG
+        // =========================
+        public bool TaoHoaDonKhiDatPhong(int maDatPhong)
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string soHoaDon = TaoSoHoaDonMoi();
+
+                string query = @"
+                    INSERT INTO HoaDon
+                    (
+                        SoHoaDon,
+                        MaDatPhong,
+                        TienPhong,
+                        TienDichVu,
+                        PhuongThucThanhToan,
+                        TienKhachDua,
+                        TienTraLai,
+                        MaNhanVienLap,
+                        TrangThai,
+                        NgayLap,
+                        NgayThanhToan
+                    )
+                    VALUES
+                    (
+                        @SoHoaDon,
+                        @MaDatPhong,
+                        0,
+                        0,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        N'Chưa thanh toán',
+                        GETDATE(),
+                        NULL
+                    )";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@SoHoaDon", soHoaDon);
+                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
+
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        // =========================
+        // 3. CẬP NHẬT HÓA ĐƠN KHI THANH TOÁN
+        // =========================
+        public bool CapNhatThanhToanHoaDon(
+            int maDatPhong,
+            decimal tienPhong,
+            decimal tienDichVu,
+            string phuongThucThanhToan,
+            decimal? tienKhachDua,
+            decimal? tienTraLai,
+            int? maNhanVienLap)
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string query = @"
+                    UPDATE HoaDon
+                    SET
+                        TienPhong = @TienPhong,
+                        TienDichVu = @TienDichVu,
+                        PhuongThucThanhToan = @PhuongThucThanhToan,
+                        TienKhachDua = @TienKhachDua,
+                        TienTraLai = @TienTraLai,
+                        MaNhanVienLap = @MaNhanVienLap,
+                        TrangThai = N'Đã thanh toán',
+                        NgayThanhToan = GETDATE()
+                    WHERE MaDatPhong = @MaDatPhong";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@TienPhong", tienPhong);
+                cmd.Parameters.AddWithValue("@TienDichVu", tienDichVu);
+                cmd.Parameters.AddWithValue("@PhuongThucThanhToan", (object)phuongThucThanhToan ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@TienKhachDua", (object)tienKhachDua ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@TienTraLai", (object)tienTraLai ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@MaNhanVienLap", (object)maNhanVienLap ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
+
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        // =========================
+        // 4. LẤY MÃ HÓA ĐƠN THEO MÃ ĐẶT PHÒNG
+        // =========================
+        public int GetMaHoaDonByMaDatPhong(int maDatPhong)
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string query = "SELECT TOP 1 MaHoaDon FROM HoaDon WHERE MaDatPhong = @MaDatPhong";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
+
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToInt32(result);
+
+                return 0;
+            }
+        }
+
+        // =========================
+        // 5. LẤY TOÀN BỘ DANH SÁCH HÓA ĐƠN
+        //    GỒM CẢ CHƯA THANH TOÁN + ĐÃ THANH TOÁN
         // =========================
         public List<HoaDonDTO> GetAllHoaDon()
         {
@@ -42,7 +172,6 @@ namespace HotelManagement.DAL
                         kh.SDT,
                         lp.TenLoaiPhong,
                         ISNULL(nv.HoTen, N'') AS TenNhanVienLap,
-
                         DATEDIFF(DAY, CAST(dp.ThoiGianNhan AS DATE), dp.NgayTraDuKien) AS SoDem
                     FROM HoaDon hd
                     INNER JOIN DatPhong dp ON hd.MaDatPhong = dp.MaDatPhong
@@ -62,22 +191,17 @@ namespace HotelManagement.DAL
                         MaHoaDon = Convert.ToInt32(rd["MaHoaDon"]),
                         SoHoaDon = rd["SoHoaDon"] == DBNull.Value ? "" : rd["SoHoaDon"].ToString(),
                         MaDatPhong = Convert.ToInt32(rd["MaDatPhong"]),
-
                         TienPhong = Convert.ToDecimal(rd["TienPhong"]),
                         TienDichVu = Convert.ToDecimal(rd["TienDichVu"]),
                         TongTien = Convert.ToDecimal(rd["TongTien"]),
-
                         PhuongThucThanhToan = rd["PhuongThucThanhToan"] == DBNull.Value ? "" : rd["PhuongThucThanhToan"].ToString(),
                         TienKhachDua = rd["TienKhachDua"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(rd["TienKhachDua"]),
                         TienTraLai = rd["TienTraLai"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(rd["TienTraLai"]),
-
                         MaNhanVienLap = rd["MaNhanVienLap"] == DBNull.Value ? (int?)null : Convert.ToInt32(rd["MaNhanVienLap"]),
                         TenNhanVienLap = rd["TenNhanVienLap"].ToString(),
-
                         TrangThai = rd["TrangThai"].ToString(),
                         NgayLap = Convert.ToDateTime(rd["NgayLap"]),
                         NgayThanhToan = rd["NgayThanhToan"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rd["NgayThanhToan"]),
-
                         SoPhong = rd["SoPhong"].ToString(),
                         HoTenKhachHang = rd["HoTenKhachHang"].ToString(),
                         CCCD = rd["CCCD"].ToString(),
@@ -88,13 +212,15 @@ namespace HotelManagement.DAL
 
                     list.Add(hd);
                 }
+
+                rd.Close();
             }
 
             return list;
         }
 
         // =========================
-        // 2. TÌM KIẾM + LỌC NGÀY + LỌC TRẠNG THÁI
+        // 6. TÌM KIẾM + LỌC NGÀY + LỌC TRẠNG THÁI
         // =========================
         public List<HoaDonDTO> SearchHoaDon(string keyword, DateTime? tuNgay, DateTime? denNgay, string trangThai)
         {
@@ -126,7 +252,6 @@ namespace HotelManagement.DAL
                         kh.SDT,
                         lp.TenLoaiPhong,
                         ISNULL(nv.HoTen, N'') AS TenNhanVienLap,
-
                         DATEDIFF(DAY, CAST(dp.ThoiGianNhan AS DATE), dp.NgayTraDuKien) AS SoDem
                     FROM HoaDon hd
                     INNER JOIN DatPhong dp ON hd.MaDatPhong = dp.MaDatPhong
@@ -150,17 +275,8 @@ namespace HotelManagement.DAL
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@Keyword", string.IsNullOrWhiteSpace(keyword) ? "" : keyword.Trim());
-
-                if (tuNgay.HasValue)
-                    cmd.Parameters.AddWithValue("@TuNgay", tuNgay.Value.Date);
-                else
-                    cmd.Parameters.AddWithValue("@TuNgay", DBNull.Value);
-
-                if (denNgay.HasValue)
-                    cmd.Parameters.AddWithValue("@DenNgay", denNgay.Value.Date);
-                else
-                    cmd.Parameters.AddWithValue("@DenNgay", DBNull.Value);
-
+                cmd.Parameters.AddWithValue("@TuNgay", tuNgay.HasValue ? (object)tuNgay.Value.Date : DBNull.Value);
+                cmd.Parameters.AddWithValue("@DenNgay", denNgay.HasValue ? (object)denNgay.Value.Date : DBNull.Value);
                 cmd.Parameters.AddWithValue("@TrangThai", string.IsNullOrWhiteSpace(trangThai) ? "Tất cả" : trangThai);
 
                 SqlDataReader rd = cmd.ExecuteReader();
@@ -172,22 +288,17 @@ namespace HotelManagement.DAL
                         MaHoaDon = Convert.ToInt32(rd["MaHoaDon"]),
                         SoHoaDon = rd["SoHoaDon"] == DBNull.Value ? "" : rd["SoHoaDon"].ToString(),
                         MaDatPhong = Convert.ToInt32(rd["MaDatPhong"]),
-
                         TienPhong = Convert.ToDecimal(rd["TienPhong"]),
                         TienDichVu = Convert.ToDecimal(rd["TienDichVu"]),
                         TongTien = Convert.ToDecimal(rd["TongTien"]),
-
                         PhuongThucThanhToan = rd["PhuongThucThanhToan"] == DBNull.Value ? "" : rd["PhuongThucThanhToan"].ToString(),
                         TienKhachDua = rd["TienKhachDua"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(rd["TienKhachDua"]),
                         TienTraLai = rd["TienTraLai"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(rd["TienTraLai"]),
-
                         MaNhanVienLap = rd["MaNhanVienLap"] == DBNull.Value ? (int?)null : Convert.ToInt32(rd["MaNhanVienLap"]),
                         TenNhanVienLap = rd["TenNhanVienLap"].ToString(),
-
                         TrangThai = rd["TrangThai"].ToString(),
                         NgayLap = Convert.ToDateTime(rd["NgayLap"]),
                         NgayThanhToan = rd["NgayThanhToan"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rd["NgayThanhToan"]),
-
                         SoPhong = rd["SoPhong"].ToString(),
                         HoTenKhachHang = rd["HoTenKhachHang"].ToString(),
                         CCCD = rd["CCCD"].ToString(),
@@ -198,13 +309,15 @@ namespace HotelManagement.DAL
 
                     list.Add(hd);
                 }
+
+                rd.Close();
             }
 
             return list;
         }
 
         // =========================
-        // 3. LẤY CHI TIẾT 1 HÓA ĐƠN THEO MaHoaDon
+        // 7. LẤY CHI TIẾT 1 HÓA ĐƠN THEO MaHoaDon
         // =========================
         public ChiTietHoaDonDTO GetChiTietHoaDonByMaHoaDon(int maHoaDon)
         {
@@ -314,7 +427,7 @@ namespace HotelManagement.DAL
         }
 
         // =========================
-        // 4. THÊM HÓA ĐƠN
+        // 8. THÊM HÓA ĐƠN
         // =========================
         public bool InsertHoaDon(HoaDonDTO hd)
         {
@@ -370,7 +483,7 @@ namespace HotelManagement.DAL
         }
 
         // =========================
-        // 5. KIỂM TRA ĐÃ CÓ HÓA ĐƠN CHƯA
+        // 9. KIỂM TRA ĐÃ CÓ HÓA ĐƠN CHƯA
         // =========================
         public bool ExistsHoaDonByMaDatPhong(int maDatPhong)
         {
