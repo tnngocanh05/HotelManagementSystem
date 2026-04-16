@@ -202,7 +202,6 @@ namespace HotelManagement.GUI.Dialogs
                 foreach (ChiTietDichVuDTO dv in chiTietHoaDon.DanhSachDichVu)
                 {
                     AddCell(table, dv.TenDichVu ?? "", normalFont);
-                    AddCell(table, dv.LoaiDichVu ?? "", normalFont);
                     AddCell(table, dv.SoLuong.ToString(), normalFont);
                     AddCell(table, dv.DonGia.ToString("N0"), normalFont);
                     AddCell(table, dv.ThanhTien.ToString("N0"), normalFont);

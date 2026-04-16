@@ -299,7 +299,6 @@ namespace HotelManagement.DAL
                         {
                             MaCTDV = Convert.ToInt32(rdDV["MaCTDV"]),
                             TenDichVu = rdDV["TenDichVu"].ToString(),
-                            LoaiDichVu = rdDV["LoaiDichVu"].ToString(),
                             SoLuong = Convert.ToInt32(rdDV["SoLuong"]),
                             DonGia = Convert.ToDecimal(rdDV["DonGia"]),
                             ThanhTien = Convert.ToDecimal(rdDV["ThanhTien"])

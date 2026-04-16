@@ -1,0 +1,28 @@
+﻿<Window x:Class="HotelManagement.GUI.Views.PhongDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thông tin phòng" Height="378" Width="400" WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="20">
+        <TextBlock Text="Số phòng:"/>
+        <TextBox x:Name="txtSoPhong" Margin="0,5,0,10" Height="30"/>
+
+        <TextBlock Text="Tầng:"/>
+        <TextBox x:Name="txtTang" Margin="0,5,0,10" Height="30"/>
+
+        <TextBlock Text="Loại phòng:"/>
+        <ComboBox x:Name="cbLoaiPhong" DisplayMemberPath="TenLoaiPhong" SelectedValuePath="MaLoaiPhong" Margin="0,5,0,10" Height="30"/>
+
+        <TextBlock Text="Tình trạng:"/>
+        <ComboBox x:Name="cbTinhTrang" Margin="0,5,0,15" Height="30">
+            <ComboBoxItem Content="Trống"/>
+            <ComboBoxItem Content="Đang ở"/>
+            <ComboBoxItem Content="Bảo trì"/>
+            <ComboBoxItem Content="Dọn dẹp"/>
+        </ComboBox>
+
+        <UniformGrid Columns="2">
+            <Button x:Name="btnLuu" Content="Lưu" Click="BtnLuu_Click" Height="35" Background="#3498db" Foreground="White" Margin="0,0,5,0"/>
+            <Button x:Name="btnHuy" Content="Hủy" Click="BtnHuy_Click" Height="35" Background="#95a5a6" Foreground="White" Margin="5,0,0,0"/>
+        </UniformGrid>
+    </StackPanel>
+</Window>

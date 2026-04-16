@@ -46,7 +46,6 @@ namespace HotelManagement.DAL
                         SoLuong = (int)rd["SoLuong"],
                         ThanhTien = (decimal)rd["ThanhTien"],
                         TenDichVu = rd["TenDichVu"].ToString(),
-                        LoaiDichVu = rd["LoaiDichVu"].ToString(),
                         DonGia = (decimal)rd["DonGia"]
                     });
                 }

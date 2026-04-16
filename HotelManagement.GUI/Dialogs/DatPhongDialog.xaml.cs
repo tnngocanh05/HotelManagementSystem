@@ -1,6 +1,7 @@
-﻿using System;
+﻿using HotelManagement.BLL;
+using HotelManagement.DTO;
+using System;
 using System.Windows;
-using HotelManagement.BLL;
 
 namespace HotelManagement.GUI.Dialogs
 {
@@ -14,6 +15,18 @@ namespace HotelManagement.GUI.Dialogs
             LoadDefaultData();
             btnDong.Click += BtnDong_Click;
             btnDatPhong.Click += BtnDatPhong_Click;
+        }
+        // --- BỔ SUNG: Constructor nhận 1 tham số PhongDTO để sửa lỗi ---
+        public DatPhongDialog(PhongDTO phong) : this() // Gọi lại constructor mặc định ở trên
+        {
+            if (phong != null)
+            {
+                txtMaPhong.Text = phong.SoPhong; // Hiển thị Số phòng cho người dùng dễ nhìn
+                txtLoaiPhong.Text = phong.TenLoaiPhong;
+
+                // Lưu tag hoặc biến ẩn nếu bạn cần dùng MaPhong (ID) để lưu DB
+                txtMaPhong.Tag = phong.MaPhong;
+            }
         }
 
         public string MaPhong

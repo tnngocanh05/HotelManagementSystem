@@ -15,6 +15,8 @@ namespace HotelManagement.BLL
 
         public bool InsertChiTietDichVu(ChiTietDichVuDTO dto)
         {
+            if (dto.SoLuong <= 0)
+                return false;
             return dal.InsertChiTietDichVu(dto);
         }
     }

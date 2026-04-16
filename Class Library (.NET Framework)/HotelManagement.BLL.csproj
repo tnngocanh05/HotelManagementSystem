@@ -48,8 +48,11 @@
     <Compile Include="DatPhongBLL.cs" />
     <Compile Include="DichVuBLL.cs" />
     <Compile Include="HoaDonBLL.cs" />
+    <Compile Include="LoaiPhongBLL.cs" />
+    <Compile Include="NhanVienBLL.cs" />
     <Compile Include="PhongBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThongKeBLL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HotelManagement.DAL\HotelManagement.DAL.csproj">
