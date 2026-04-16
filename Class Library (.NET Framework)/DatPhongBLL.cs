@@ -8,6 +8,7 @@ namespace HotelManagement.BLL
     {
         private KhachHangDAL khachHangDAL = new KhachHangDAL();
         private DatPhongDAL datPhongDAL = new DatPhongDAL();
+        private HoaDonDAL hoaDonDAL = new HoaDonDAL();
 
         public bool DatPhongTrucTiep(
             string soPhong,
@@ -70,19 +71,27 @@ namespace HotelManagement.BLL
                 TrangThai = "Đã đặt"
             };
 
-            bool insertResult = datPhongDAL.InsertDatPhong(datPhong);
+            // SỬA: InsertDatPhong giờ trả về MaDatPhong
+            int maDatPhong = datPhongDAL.InsertDatPhong(datPhong);
 
-            if (insertResult)
+            if (maDatPhong > 0)
             {
+                // Lồng thêm: tạo hóa đơn ngay khi đặt phòng
+                bool taoHoaDon = hoaDonDAL.TaoHoaDonKhiDatPhong(maDatPhong);
+
+                if (!taoHoaDon)
+                {
+                    return false;
+                }
+
                 datPhongDAL.UpdateTinhTrangPhong(maPhong, "Đang ở");
                 return true;
             }
 
             return false;
         }
-    
 
-    public ChiTietLuuTruDTO GetChiTietLuuTruBySoPhong(string soPhong)
+        public ChiTietLuuTruDTO GetChiTietLuuTruBySoPhong(string soPhong)
         {
             return datPhongDAL.GetChiTietLuuTruBySoPhong(soPhong);
         }

@@ -48,6 +48,7 @@
     <Compile Include="DatPhongBLL.cs" />
     <Compile Include="DichVuBLL.cs" />
     <Compile Include="HoaDonBLL.cs" />
+    <Compile Include="NhanVienBLL.cs" />
     <Compile Include="PhongBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

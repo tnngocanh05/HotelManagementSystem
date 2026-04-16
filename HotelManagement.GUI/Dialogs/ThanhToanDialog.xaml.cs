@@ -7,6 +7,7 @@ namespace HotelManagement.GUI.Dialogs
     public partial class ThanhToanDialog : Window
     {
         private HoaDonBLL hoaDonBLL = new HoaDonBLL();
+        private NhanVienBLL nhanVienBLL = new NhanVienBLL();
 
         public int MaDatPhong { get; set; }
 
@@ -38,6 +39,20 @@ namespace HotelManagement.GUI.Dialogs
             cbPhuongThuc.Items.Add("Tiền mặt");
             cbPhuongThuc.Items.Add("Chuyển khoản");
             cbPhuongThuc.SelectedIndex = 0;
+
+            // Lồng thêm
+            LoadNhanVien();
+        }
+
+        // Lồng thêm
+        private void LoadNhanVien()
+        {
+            cbNhanVien.ItemsSource = nhanVienBLL.GetAllNhanVien();
+            cbNhanVien.DisplayMemberPath = "HoTen";
+            cbNhanVien.SelectedValuePath = "MaNhanVien";
+
+            if (cbNhanVien.Items.Count > 0)
+                cbNhanVien.SelectedIndex = 0;
         }
 
         private void CbPhuongThuc_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -79,6 +94,13 @@ namespace HotelManagement.GUI.Dialogs
                     return;
                 }
 
+                if (cbNhanVien.SelectedValue == null)
+                {
+                    MessageBox.Show("Vui lòng chọn nhân viên thanh toán.");
+                    return;
+                }
+
+                int maNhanVienLap = Convert.ToInt32(cbNhanVien.SelectedValue);
                 string phuongThuc = cbPhuongThuc.SelectedItem.ToString();
 
                 if (phuongThuc == "Tiền mặt")
@@ -95,7 +117,12 @@ namespace HotelManagement.GUI.Dialogs
                     tienKhachDua = value;
 
                     string message;
-                    bool result = hoaDonBLL.ThanhToan(MaDatPhong, phuongThuc, tienKhachDua, out message);
+                    bool result = hoaDonBLL.ThanhToan(
+                        MaDatPhong,
+                        phuongThuc,
+                        tienKhachDua,
+                        maNhanVienLap,
+                        out message);
 
                     MessageBox.Show(message);
 
@@ -110,7 +137,8 @@ namespace HotelManagement.GUI.Dialogs
                     ThanhToanChuyenKhoanDialog dlg = new ThanhToanChuyenKhoanDialog
                     {
                         MaDatPhong = MaDatPhong,
-                        TongTien = tongTien
+                        TongTien = tongTien,
+                        MaNhanVienLap = maNhanVienLap
                     };
 
                     bool? result = dlg.ShowDialog();

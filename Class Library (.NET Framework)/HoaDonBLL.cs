@@ -44,8 +44,8 @@ namespace HotelManagement.BLL
         }
 
         // =========================
-        // 5. TẠO SỐ HÓA ĐƠN
-        // Ví dụ: HD001, HD025, HD120
+        // 5. TẠO SỐ HÓA ĐƠN TẠM
+        // Giữ lại để tương thích nếu nơi khác đang gọi
         // =========================
         public string TaoSoHoaDonTam(int maHoaDonTam)
         {
@@ -86,17 +86,27 @@ namespace HotelManagement.BLL
 
         // =========================
         // 9. THANH TOÁN
-        // - Tạo hóa đơn
+        // - KHÔNG tạo hóa đơn mới nữa
+        // - Chỉ cập nhật hóa đơn đã có sẵn từ lúc đặt phòng
         // - Update DatPhong = Đã trả
         // - Update Phong = Dọn dẹp
         // =========================
         public bool ThanhToan(int maDatPhong, string phuongThuc, decimal? tienKhachDua, out string message)
         {
+            return ThanhToan(maDatPhong, phuongThuc, tienKhachDua, null, out message);
+        }
+
+        // =========================
+        // 10. THANH TOÁN CÓ NHÂN VIÊN
+        // =========================
+        public bool ThanhToan(int maDatPhong, string phuongThuc, decimal? tienKhachDua, int? maNhanVienLap, out string message)
+        {
             message = "";
 
-            if (hoaDonDAL.ExistsHoaDonByMaDatPhong(maDatPhong))
+            // Vì đặt phòng xong là đã có hóa đơn "Chưa thanh toán"
+            if (!hoaDonDAL.ExistsHoaDonByMaDatPhong(maDatPhong))
             {
-                message = "Đặt phòng này đã có hóa đơn rồi.";
+                message = "Không tìm thấy hóa đơn của đặt phòng này.";
                 return false;
             }
 
@@ -130,31 +140,18 @@ namespace HotelManagement.BLL
                 tienTraLai = tienKhachDua.Value - tongTien;
             }
 
-            // Tạo số hóa đơn tạm theo thời gian
-            string soHoaDon = "HD" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            bool updateHoaDon = hoaDonDAL.CapNhatThanhToanHoaDon(
+                maDatPhong,
+                tienPhong,
+                tienDichVu,
+                phuongThuc,
+                tienKhachDua,
+                tienTraLai,
+                maNhanVienLap);
 
-            HoaDonDTO hd = new HoaDonDTO
+            if (!updateHoaDon)
             {
-                SoHoaDon = soHoaDon,
-                MaDatPhong = maDatPhong,
-                TienPhong = tienPhong,
-                TienDichVu = tienDichVu,
-                PhuongThucThanhToan = phuongThuc,
-                TienKhachDua = tienKhachDua,
-                TienTraLai = tienTraLai,
-
-                // Tạm thời chưa gắn nhân viên đăng nhập
-                MaNhanVienLap = null,
-
-                TrangThai = "Đã thanh toán",
-                NgayLap = DateTime.Now,
-                NgayThanhToan = DateTime.Now
-            };
-
-            bool insertHoaDon = hoaDonDAL.InsertHoaDon(hd);
-            if (!insertHoaDon)
-            {
-                message = "Không thể lưu hóa đơn.";
+                message = "Không thể cập nhật thanh toán hóa đơn.";
                 return false;
             }
 

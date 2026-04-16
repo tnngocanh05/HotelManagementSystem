@@ -25,6 +25,7 @@ namespace HotelManagement.GUI.Dialogs
 
             Loaded += ChiTietHoaDonDialog_Loaded;
             btnDong.Click += BtnDong_Click;
+            btnXemTruocPDF.Click += BtnXemTruocPDF_Click;
             btnXuatPDF.Click += BtnXuatPDF_Click;
             btnInHoaDon.Click += BtnInHoaDon_Click;
         }
@@ -66,6 +67,40 @@ namespace HotelManagement.GUI.Dialogs
             txtTongTien.Text = chiTietHoaDon.TongTien.ToString("N0");
 
             dgDichVuHoaDon.ItemsSource = chiTietHoaDon.DanhSachDichVu;
+        }
+
+        // ✅ Lồng thêm: xem trước PDF
+        private void BtnXemTruocPDF_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (chiTietHoaDon == null)
+                {
+                    MessageBox.Show("Không có dữ liệu hóa đơn để xem trước PDF.",
+                                    "Thông báo",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning);
+                    return;
+                }
+
+                string tempFile = Path.Combine(
+                    Path.GetTempPath(),
+                    (chiTietHoaDon.SoHoaDon ?? "HoaDon") + "_Preview.pdf");
+
+                ExportPdf(tempFile);
+
+                Process.Start(new ProcessStartInfo(tempFile)
+                {
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi xem trước PDF: " + ex.Message,
+                                "Thông báo lỗi",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
         }
 
         private void BtnXuatPDF_Click(object sender, RoutedEventArgs e)
@@ -117,19 +152,17 @@ namespace HotelManagement.GUI.Dialogs
                     return;
                 }
 
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "PDF file|*.pdf";
-                saveFileDialog.FileName = (chiTietHoaDon.SoHoaDon ?? "HoaDon") + "_Print.pdf";
+                // In theo kiểu an toàn: tạo file tạm rồi mở lên
+                string tempFile = Path.Combine(
+                    Path.GetTempPath(),
+                    (chiTietHoaDon.SoHoaDon ?? "HoaDon") + "_Print.pdf");
 
-                if (saveFileDialog.ShowDialog() == true)
+                ExportPdf(tempFile);
+
+                Process.Start(new ProcessStartInfo(tempFile)
                 {
-                    ExportPdf(saveFileDialog.FileName);
-
-                    Process.Start(new ProcessStartInfo(saveFileDialog.FileName)
-                    {
-                        UseShellExecute = true
-                    });
-                }
+                    UseShellExecute = true
+                });
             }
             catch (Exception ex)
             {
@@ -158,16 +191,13 @@ namespace HotelManagement.GUI.Dialogs
             iTextSharp.text.Font boldFont = new iTextSharp.text.Font(baseFont, 11, iTextSharp.text.Font.BOLD);
             iTextSharp.text.Font italicFont = new iTextSharp.text.Font(baseFont, 11, iTextSharp.text.Font.ITALIC);
 
-            Paragraph hotelName = new Paragraph("KHÁCH SẠN QUẢN LÝ KHÁCH SẠN", boldFont);
-            hotelName.Alignment = Element.ALIGN_CENTER;
-            document.Add(hotelName);
-
+            // ✅ Sửa: bỏ dòng tiêu đề kỳ quặc, thay bằng header gọn hơn
             Paragraph title = new Paragraph("HÓA ĐƠN THANH TOÁN", titleFont);
             title.Alignment = Element.ALIGN_CENTER;
             title.SpacingAfter = 15;
             document.Add(title);
 
-            document.Add(new Paragraph("Số hóa đơn: " + (chiTietHoaDon.SoHoaDon ?? ""), normalFont));
+            document.Add(new Paragraph("Mã hóa đơn: " + (chiTietHoaDon.SoHoaDon ?? ""), normalFont));
             document.Add(new Paragraph("Ngày lập hóa đơn: " + chiTietHoaDon.NgayLapHoaDon.ToString("dd/MM/yyyy HH:mm"), normalFont));
             document.Add(new Paragraph("Ngày thanh toán: " +
                 (chiTietHoaDon.NgayThanhToan.HasValue
@@ -181,6 +211,7 @@ namespace HotelManagement.GUI.Dialogs
             document.Add(new Paragraph("Loại phòng: " + (chiTietHoaDon.TenLoaiPhong ?? ""), normalFont));
             document.Add(new Paragraph("Số đêm ở: " + chiTietHoaDon.SoDem, normalFont));
             document.Add(new Paragraph("Phương thức thanh toán: " + (chiTietHoaDon.PhuongThucThanhToan ?? ""), normalFont));
+            document.Add(new Paragraph("Trạng thái: " + (chiTietHoaDon.TrangThai ?? ""), normalFont));
             document.Add(new Paragraph(" ", normalFont));
 
             Paragraph serviceTitle = new Paragraph("BẢNG DỊCH VỤ", boldFont);

@@ -21,15 +21,36 @@ namespace HotelManagement.DAL
 
                 object result = cmd.ExecuteScalar();
 
-                if (result != null)
+                if (result != null && result != DBNull.Value)
                     return Convert.ToInt32(result);
 
                 return -1;
             }
         }
 
+        // 🔎 Lấy MaPhong từ MaDatPhong
+        public int GetMaPhongByMaDatPhong(int maDatPhong)
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string query = "SELECT MaPhong FROM DatPhong WHERE MaDatPhong = @MaDatPhong";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
+
+                object result = cmd.ExecuteScalar();
+
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToInt32(result);
+
+                return 0;
+            }
+        }
+
         // ➕ Thêm đặt phòng
-        public bool InsertDatPhong(DatPhongDTO dp)
+        // SỬA: trả về MaDatPhong mới tạo thay vì bool
+        public int InsertDatPhong(DatPhongDTO dp)
         {
             using (SqlConnection conn = db.GetConnection())
             {
@@ -39,7 +60,9 @@ namespace HotelManagement.DAL
                     INSERT INTO DatPhong
                     (MaKhachHang, MaPhong, ThoiGianDat, ThoiGianNhan, NgayTraDuKien, SoNguoi, TrangThai)
                     VALUES
-                    (@MaKhachHang, @MaPhong, @ThoiGianDat, @ThoiGianNhan, @NgayTraDuKien, @SoNguoi, @TrangThai)
+                    (@MaKhachHang, @MaPhong, @ThoiGianDat, @ThoiGianNhan, @NgayTraDuKien, @SoNguoi, @TrangThai);
+
+                    SELECT CAST(SCOPE_IDENTITY() AS INT);
                 ";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
@@ -52,7 +75,12 @@ namespace HotelManagement.DAL
                 cmd.Parameters.AddWithValue("@SoNguoi", dp.SoNguoi);
                 cmd.Parameters.AddWithValue("@TrangThai", dp.TrangThai);
 
-                return cmd.ExecuteNonQuery() > 0;
+                object result = cmd.ExecuteScalar();
+
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToInt32(result);
+
+                return 0;
             }
         }
 
@@ -181,8 +209,41 @@ namespace HotelManagement.DAL
             }
         }
 
+        // 📌 Tính tiền phòng theo MaDatPhong
+        public decimal TinhTienPhong(int maDatPhong)
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                string query = @"
+                    SELECT 
+                        ISNULL(lp.GiaTien * 
+                            CASE 
+                                WHEN DATEDIFF(DAY, CAST(dp.ThoiGianNhan AS DATE), dp.NgayTraDuKien) <= 0 
+                                    THEN 1
+                                ELSE DATEDIFF(DAY, CAST(dp.ThoiGianNhan AS DATE), dp.NgayTraDuKien)
+                            END
+                        , 0)
+                    FROM DatPhong dp
+                    INNER JOIN Phong p ON dp.MaPhong = p.MaPhong
+                    INNER JOIN LoaiPhong lp ON p.MaLoaiPhong = lp.MaLoaiPhong
+                    WHERE dp.MaDatPhong = @MaDatPhong";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
+
+                object result = cmd.ExecuteScalar();
+
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToDecimal(result);
+
+                return 0;
+            }
+        }
+
         // 📌 Tính tổng tiền dịch vụ theo MaDatPhong
-        public decimal GetTongTienDichVu(int maDatPhong)
+        public decimal TinhTienDichVu(int maDatPhong)
         {
             using (SqlConnection conn = db.GetConnection())
             {
@@ -197,8 +258,18 @@ namespace HotelManagement.DAL
                 cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
 
                 object result = cmd.ExecuteScalar();
-                return Convert.ToDecimal(result);
+
+                if (result != null && result != DBNull.Value)
+                    return Convert.ToDecimal(result);
+
+                return 0;
             }
+        }
+
+        // 📌 Giữ lại hàm cũ để không vỡ code cũ
+        public decimal GetTongTienDichVu(int maDatPhong)
+        {
+            return TinhTienDichVu(maDatPhong);
         }
     }
 }

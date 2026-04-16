@@ -11,7 +11,7 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="220"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="130"/>
@@ -19,17 +19,32 @@
         </Grid.RowDefinitions>
 
         <!-- Tiêu đề -->
-        <TextBlock Text="CHI TIẾT HÓA ĐƠN"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Foreground="#0F4C5C"
-                   Margin="0,0,0,20"/>
+        <Border Grid.Row="0"
+                Background="#0F4C5C"
+                CornerRadius="12"
+                Padding="18"
+                Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="HÓA ĐƠN THANH TOÁN"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Chi tiết hóa đơn và dịch vụ sử dụng"
+                           FontSize="14"
+                           Foreground="White"
+                           Opacity="0.9"
+                           HorizontalAlignment="Center"
+                           Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
 
         <!-- Thông tin hóa đơn -->
-        <Border
+        <Border Grid.Row="1"
                 Background="White"
                 CornerRadius="10"
-                Padding="20" Margin="0,57,0,42" Grid.RowSpan="3">
+                Padding="20"
+                Margin="0,0,0,20">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="160"/>
@@ -46,34 +61,34 @@
                     <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Mã hóa đơn:" VerticalAlignment="Center"/>
+                <TextBlock Text="Mã hóa đơn:" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtSoHoaDon" Grid.Column="1" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Ngày lập:" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Ngày lập:" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtNgayLap" Grid.Column="3" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Khách hàng:" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBlock Text="Khách hàng:" Grid.Row="1" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtKhachHang" Grid.Row="1" Grid.Column="1" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Mã phòng:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Mã phòng:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtSoPhong" Grid.Row="1" Grid.Column="3" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Loại phòng:" Grid.Row="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Loại phòng:" Grid.Row="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtLoaiPhong" Grid.Row="2" Grid.Column="1" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Số đêm:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Số đêm:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtSoDem" Grid.Row="2" Grid.Column="3" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Trạng thái:" Grid.Row="3" VerticalAlignment="Center"/>
+                <TextBlock Text="Trạng thái:" Grid.Row="3" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtTrangThai" Grid.Row="3" Grid.Column="1" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Ngày thanh toán:" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Ngày thanh toán:" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtNgayThanhToan" Grid.Row="3" Grid.Column="3" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Nhân viên thanh toán:" Grid.Row="4" VerticalAlignment="Center"/>
+                <TextBlock Text="Nhân viên thanh toán:" Grid.Row="4" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtNhanVienLap" Grid.Row="4" Grid.Column="1" Margin="5" IsReadOnly="True"/>
 
-                <TextBlock Text="Phương thức:" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
+                <TextBlock Text="Phương thức:" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 <TextBox x:Name="txtPhuongThuc" Grid.Row="4" Grid.Column="3" Margin="5" IsReadOnly="True"/>
             </Grid>
         </Border>
@@ -84,7 +99,7 @@
                    FontSize="20"
                    FontWeight="Bold"
                    Foreground="#0F4C5C"
-                   Margin="0,20,0,10"/>
+                   Margin="0,0,0,10"/>
 
         <!-- DataGrid dịch vụ -->
         <Border Grid.Row="3"
@@ -97,14 +112,16 @@
                       IsReadOnly="True"
                       HeadersVisibility="Column"
                       RowHeight="34"
-                      AlternatingRowBackground="#F8F9FA">
+                      AlternatingRowBackground="#F8F9FA"
+                      GridLinesVisibility="Horizontal"
+                      BorderThickness="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="STT" Binding="{Binding MaCTDV}" Width="80"/>
-                    <DataGridTextColumn Header="Tên dịch vụ" Binding="{Binding TenDichVu}" Width="200"/>
-                    <DataGridTextColumn Header="Loại DV" Binding="{Binding LoaiDichVu}" Width="140"/>
+                    <DataGridTextColumn Header="Tên dịch vụ" Binding="{Binding TenDichVu}" Width="220"/>
+                    <DataGridTextColumn Header="Loại DV" Binding="{Binding LoaiDichVu}" Width="150"/>
                     <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong}" Width="100"/>
-                    <DataGridTextColumn Header="Đơn giá" Binding="{Binding DonGia, StringFormat=N0}" Width="130"/>
-                    <DataGridTextColumn Header="Thành tiền" Binding="{Binding ThanhTien, StringFormat=N0}" Width="150"/>
+                    <DataGridTextColumn Header="Đơn giá" Binding="{Binding DonGia, StringFormat=N0}" Width="140"/>
+                    <DataGridTextColumn Header="Thành tiền" Binding="{Binding ThanhTien, StringFormat=N0}" Width="160"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -138,7 +155,9 @@
                 <TextBlock Text="Tổng tiền:" Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" FontSize="16"/>
                 <TextBox x:Name="txtTongTien" Grid.Row="2" Grid.Column="1" Margin="5" IsReadOnly="True" FontWeight="Bold"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
+                <TextBlock Grid.Row="2"
+                           Grid.Column="2"
+                           Grid.ColumnSpan="2"
                            Text="Xin cảm ơn quý khách đã sử dụng dịch vụ!"
                            Foreground="#0F4C5C"
                            FontStyle="Italic"
@@ -153,26 +172,41 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="0,20,0,0">
+            <Button x:Name="btnXemTruocPDF"
+                    Content="Xem trước PDF"
+                    Width="140"
+                    Height="36"
+                    Margin="10,0"
+                    Background="#0D6EFD"
+                    Foreground="White"
+                    FontWeight="SemiBold"/>
+
             <Button x:Name="btnXuatPDF"
                     Content="Xuất PDF"
                     Width="130"
+                    Height="36"
                     Margin="10,0"
                     Background="#DC3545"
-                    Foreground="White"/>
+                    Foreground="White"
+                    FontWeight="SemiBold"/>
 
             <Button x:Name="btnInHoaDon"
                     Content="In hóa đơn"
                     Width="130"
+                    Height="36"
                     Margin="10,0"
                     Background="#198754"
-                    Foreground="White"/>
+                    Foreground="White"
+                    FontWeight="SemiBold"/>
 
             <Button x:Name="btnDong"
                     Content="Đóng"
                     Width="120"
+                    Height="36"
                     Margin="10,0"
                     Background="#6C757D"
-                    Foreground="White"/>
+                    Foreground="White"
+                    FontWeight="SemiBold"/>
         </StackPanel>
     </Grid>
 </Window>
