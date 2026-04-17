@@ -1,0 +1,94 @@
+﻿<UserControl  x:Class="HotelManagement.GUI.Views.DichVuView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av"
+        Background="#F5F7FA" av:DesignHeight="592.478" av:DesignWidth="1112.19">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Quản lý dịch vụ"
+                       FontSize="22"
+                       FontWeight="Bold"/>
+
+            <Button Content="+ Thêm dịch vụ"
+                    Width="140"
+                    Height="35"
+                    Background="#3B82F6"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Right"
+                    DockPanel.Dock="Right"
+                    Click="BtnThemDichVu_Click"/>
+        </DockPanel>
+
+        <!-- LIST -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl x:Name="icDichVu">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="260" Height="170" Margin="10"
+                                Background="White"
+                                CornerRadius="10"
+                                Padding="10"
+                                BorderBrush="#DDD"
+                                BorderThickness="1">
+
+                            <StackPanel>
+
+                                <TextBlock Text="{Binding TenDichVu}"
+                                           FontSize="16"
+                                           FontWeight="Bold"/>
+
+                                <TextBlock Text="{Binding LoaiDichVu}"
+                                           Foreground="Gray"
+                                           Margin="0,5,0,0"/>
+
+                                <TextBlock Text="{Binding DonGia, StringFormat=\{0:N0\} đ}"
+                                           Foreground="#2563EB"
+                                           FontWeight="Bold"
+                                           Margin="0,5,0,5"/>
+
+                                <TextBlock Text="{Binding MaDichVu, StringFormat=Mã: \{0\}}"
+                                           FontSize="12"
+                                           Foreground="#888"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right">
+
+                                    <Button Content="Sửa"
+                                            Width="60"
+                                            Margin="5"
+                                            Background="#60A5FA"
+                                            Foreground="White"
+                                            Click="btnSua_Click"/>
+
+                                    <Button Content="Xóa"
+                                            Width="70"
+                                            Margin="5"
+                                            Background="#EF4444"
+                                            Foreground="White"
+                                            Click="btnXoa_Click"/>
+                                </StackPanel>
+
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

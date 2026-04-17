@@ -3,88 +3,59 @@ using HotelManagement.DTO;
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace HotelManagement.GUI.Dialogs
 {
     public partial class ThemDichVuDialog : Window
     {
-        private DichVuBLL dichVuBLL = new DichVuBLL();
-        private ChiTietDichVuBLL chiTietDichVuBLL = new ChiTietDichVuBLL();
-
-        public int MaDatPhong { get; set; }
+        private DichVuDTO dv;
 
         public ThemDichVuDialog()
         {
             InitializeComponent();
-            Loaded += ThemDichVuDialog_Loaded;
-            btnDong.Click += BtnDong_Click;
-            btnLuu.Click += BtnLuu_Click;
-            cbDichVu.SelectionChanged += CbDichVu_SelectionChanged;
         }
 
-        private void ThemDichVuDialog_Loaded(object sender, RoutedEventArgs e)
+        public ThemDichVuDialog(DichVuDTO dvSua)
         {
-            txtMaDatPhong.Text = MaDatPhong.ToString();
-            cbDichVu.ItemsSource = dichVuBLL.GetAllDichVu();
+            InitializeComponent();
+            dv = dvSua;
+
+            txtMa.Text = dv.MaDichVu.ToString(); // 🔥 HIỂN THỊ MÃ
+            txtTen.Text = dv.TenDichVu;
+            txtGia.Text = dv.DonGia.ToString();
         }
 
-        private void CbDichVu_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+
+        private void btnHuy_Click(object sender, RoutedEventArgs e)
         {
-            DichVuDTO dv = cbDichVu.SelectedItem as DichVuDTO;
-            if (dv != null)
+            this.Close();
+        }
+
+        private void btnLuu_Click(object sender, RoutedEventArgs e)
+        {
+            string loai = (cbLoai.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            if (dv == null)
             {
-                txtDonGia.Text = dv.DonGia.ToString("N0");
-            }
-        }
-
-        private void BtnLuu_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (cbDichVu.SelectedItem == null)
+                DichVuDTO newDV = new DichVuDTO
                 {
-                    MessageBox.Show("Vui lòng chọn dịch vụ!");
-                    return;
-                }
-
-                int soLuong;
-                if (!int.TryParse(txtSoLuong.Text, out soLuong) || soLuong <= 0)
-                {
-                    MessageBox.Show("Số lượng phải lớn hơn 0!");
-                    return;
-                }
-
-                DichVuDTO dv = cbDichVu.SelectedItem as DichVuDTO;
-
-                ChiTietDichVuDTO dto = new ChiTietDichVuDTO
-                {
-                    MaDatPhong = MaDatPhong,
-                    MaDichVu = dv.MaDichVu,
-                    SoLuong = soLuong,
-                    ThanhTien = dv.DonGia * soLuong
+                    TenDichVu = txtTen.Text,
+                    DonGia = decimal.Parse(txtGia.Text),
+                    LoaiDichVu = loai
                 };
 
-                bool result = chiTietDichVuBLL.InsertChiTietDichVu(dto);
-
-                if (result)
-                {
-                    MessageBox.Show("Thêm dịch vụ thành công!");
-                    this.DialogResult = true;
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Thêm dịch vụ thất bại!");
-                }
+                DichVuBLL.Instance.ThemDichVu(newDV);
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
-        }
+                dv.TenDichVu = txtTen.Text;
+                dv.DonGia = decimal.Parse(txtGia.Text);
+                dv.LoaiDichVu = loai;
 
-        private void BtnDong_Click(object sender, RoutedEventArgs e)
-        {
+                DichVuBLL.Instance.UpdateDichVu(dv);
+            }
+
             this.Close();
         }
     }

@@ -5,7 +5,7 @@ namespace HotelManagement.DAL
     public class DBConnection
     {
         private readonly string connectionString =
-            @"Data Source=DESKTOP-8MRPC2J\SQLEXPRESS;Initial Catalog=QuanLyKhachSan;Integrated Security=True;TrustServerCertificate=True";
+            @"Data Source=.;Initial Catalog=QuanLyKhachSan;Integrated Security=True;TrustServerCertificate=True";
 
         public SqlConnection GetConnection()
         {

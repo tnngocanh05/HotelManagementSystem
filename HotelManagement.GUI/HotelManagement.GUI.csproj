@@ -119,8 +119,17 @@
     <Compile Include="Dialogs\ThemDichVuDialog.xaml.cs">
       <DependentUpon>ThemDichVuDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ThemKhachHangDialog.xaml.cs">
+      <DependentUpon>ThemKhachHangDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DichVuView.xaml.cs">
+      <DependentUpon>DichVuView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HoaDonView.xaml.cs">
       <DependentUpon>HoaDonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KhachHangView.xaml.cs">
+      <DependentUpon>KhachHangView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TrangChuView.xaml.cs">
       <DependentUpon>TrangChuView.xaml</DependentUpon>
@@ -149,6 +158,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\ThemKhachHangDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,7 +178,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DichVuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\HoaDonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\KhachHangView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

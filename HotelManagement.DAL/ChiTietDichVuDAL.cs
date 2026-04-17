@@ -1,4 +1,5 @@
 ﻿using HotelManagement.DTO;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
@@ -6,73 +7,148 @@ namespace HotelManagement.DAL
 {
     public class ChiTietDichVuDAL
     {
-        private DBConnection db = new DBConnection();
+        private static ChiTietDichVuDAL instance;
+        public static ChiTietDichVuDAL Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new ChiTietDichVuDAL();
+                return instance;
+            }
+        }
 
-        public List<ChiTietDichVuDTO> GetByMaDatPhong(int maDatPhong)
+        private SqlConnection GetConnection()
+        {
+            DBConnection db = new DBConnection();
+            return db.GetConnection();
+        }
+
+        #region GET ALL
+        public List<ChiTietDichVuDTO> GetAll()
         {
             List<ChiTietDichVuDTO> list = new List<ChiTietDichVuDTO>();
 
-            using (SqlConnection conn = db.GetConnection())
+            string query = "SELECT * FROM ChiTietDichVu";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 conn.Open();
-
-                string query = @"
-                    SELECT 
-                        ctdv.MaCTDV,
-                        ctdv.MaDatPhong,
-                        ctdv.MaDichVu,
-                        ctdv.SoLuong,
-                        ctdv.ThanhTien,
-                        dv.TenDichVu,
-                        dv.LoaiDichVu,
-                        dv.DonGia
-                    FROM ChiTietDichVu ctdv
-                    INNER JOIN DichVu dv ON ctdv.MaDichVu = dv.MaDichVu
-                    WHERE ctdv.MaDatPhong = @MaDatPhong
-                    ORDER BY ctdv.MaCTDV DESC";
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@MaDatPhong", maDatPhong);
-
-                SqlDataReader rd = cmd.ExecuteReader();
-
-                while (rd.Read())
+                using (SqlDataReader rd = cmd.ExecuteReader())
                 {
-                    list.Add(new ChiTietDichVuDTO
+                    while (rd.Read())
                     {
-                        MaCTDV = (int)rd["MaCTDV"],
-                        MaDatPhong = (int)rd["MaDatPhong"],
-                        MaDichVu = (int)rd["MaDichVu"],
-                        SoLuong = (int)rd["SoLuong"],
-                        ThanhTien = (decimal)rd["ThanhTien"],
-                        TenDichVu = rd["TenDichVu"].ToString(),
-                        LoaiDichVu = rd["LoaiDichVu"].ToString(),
-                        DonGia = (decimal)rd["DonGia"]
-                    });
+                        list.Add(Map(rd));
+                    }
                 }
             }
 
             return list;
         }
+        #endregion
 
-        public bool InsertChiTietDichVu(ChiTietDichVuDTO dto)
+        #region INSERT
+        public bool Insert(ChiTietDichVuDTO ct)
         {
-            using (SqlConnection conn = db.GetConnection())
+            string query = @"INSERT INTO ChiTietDichVu
+                        (MaDatPhong, MaDichVu, SoLuong, ThanhTien)
+                        VALUES (@MaDP, @MaDV, @SL, @Tien)";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 conn.Open();
 
-                string query = @"
-                    INSERT INTO ChiTietDichVu(MaDatPhong, MaDichVu, SoLuong, ThanhTien)
-                    VALUES(@MaDatPhong, @MaDichVu, @SoLuong, @ThanhTien)";
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@MaDatPhong", dto.MaDatPhong);
-                cmd.Parameters.AddWithValue("@MaDichVu", dto.MaDichVu);
-                cmd.Parameters.AddWithValue("@SoLuong", dto.SoLuong);
-                cmd.Parameters.AddWithValue("@ThanhTien", dto.ThanhTien);
+                cmd.Parameters.AddWithValue("@MaDP", ct.MaDatPhong);
+                cmd.Parameters.AddWithValue("@MaDV", ct.MaDichVu);
+                cmd.Parameters.AddWithValue("@SL", ct.SoLuong);
+                cmd.Parameters.AddWithValue("@Tien", ct.ThanhTien);
 
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        #endregion
+
+        #region UPDATE
+        public bool Update(ChiTietDichVuDTO ct)
+        {
+            string query = @"UPDATE ChiTietDichVu
+                         SET MaDatPhong=@MaDP,
+                             MaDichVu=@MaDV,
+                             SoLuong=@SL,
+                             ThanhTien=@Tien
+                         WHERE MaCTDV=@Ma";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+
+                cmd.Parameters.AddWithValue("@Ma", ct.MaCTDV);
+                cmd.Parameters.AddWithValue("@MaDP", ct.MaDatPhong);
+                cmd.Parameters.AddWithValue("@MaDV", ct.MaDichVu);
+                cmd.Parameters.AddWithValue("@SL", ct.SoLuong);
+                cmd.Parameters.AddWithValue("@Tien", ct.ThanhTien);
+
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+        #endregion
+
+        #region DELETE
+        public bool Delete(int ma)
+        {
+            string query = "DELETE FROM ChiTietDichVu WHERE MaCTDV=@Ma";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+                cmd.Parameters.AddWithValue("@Ma", ma);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+        #endregion
+
+        #region GET BY MÃ ĐẶT PHÒNG
+        public List<ChiTietDichVuDTO> GetByMaDatPhong(int maDP)
+        {
+            List<ChiTietDichVuDTO> list = new List<ChiTietDichVuDTO>();
+
+            string query = "SELECT * FROM ChiTietDichVu WHERE MaDatPhong=@MaDP";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+                cmd.Parameters.AddWithValue("@MaDP", maDP);
+
+                using (SqlDataReader rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        list.Add(Map(rd));
+                    }
+                }
+            }
+
+            return list;
+        }
+        #endregion
+
+        #region MAP
+        private ChiTietDichVuDTO Map(SqlDataReader rd)
+        {
+            return new ChiTietDichVuDTO
+            {
+                MaCTDV = Convert.ToInt32(rd["MaCTDV"]),
+                MaDatPhong = Convert.ToInt32(rd["MaDatPhong"]),
+                MaDichVu = Convert.ToInt32(rd["MaDichVu"]),
+                SoLuong = Convert.ToInt32(rd["SoLuong"]),
+                ThanhTien = Convert.ToDecimal(rd["ThanhTien"])
+            };
+        }
+        #endregion
     }
 }
