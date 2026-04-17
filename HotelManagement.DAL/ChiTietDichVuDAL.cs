@@ -143,6 +143,7 @@ namespace HotelManagement.DAL
             return new ChiTietDichVuDTO
             {
                 MaCTDV = Convert.ToInt32(rd["MaCTDV"]),
+                
                 MaDatPhong = Convert.ToInt32(rd["MaDatPhong"]),
                 MaDichVu = Convert.ToInt32(rd["MaDichVu"]),
                 SoLuong = Convert.ToInt32(rd["SoLuong"]),

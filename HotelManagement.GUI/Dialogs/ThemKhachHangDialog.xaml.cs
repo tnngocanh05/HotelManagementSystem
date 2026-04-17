@@ -1,26 +1,21 @@
 ﻿using HotelManagement.BLL;
 using HotelManagement.DTO;
-using System;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace HotelManagement.GUI.Dialogs
 {
-    /// <summary>
-    /// Interaction logic for ThemKhachHangDialog.xaml
-    /// </summary>
     public partial class ThemKhachHangDialog : Window
     {
         private KhachHangDTO kh;
+        private KhachHangBLL khachHangBLL = new KhachHangBLL();
 
-        // ===== THÊM =====
+        // THÊM
         public ThemKhachHangDialog()
         {
             InitializeComponent();
         }
 
-        // ===== SỬA =====
+        // SỬA
         public ThemKhachHangDialog(KhachHangDTO khach)
         {
             InitializeComponent();
@@ -34,7 +29,6 @@ namespace HotelManagement.GUI.Dialogs
 
         private void btnLuu_Click(object sender, RoutedEventArgs e)
         {
-            // THÊM
             if (kh == null)
             {
                 KhachHangDTO newKH = new KhachHangDTO
@@ -44,16 +38,15 @@ namespace HotelManagement.GUI.Dialogs
                     SDT = txtSDT.Text
                 };
 
-                KhachHangBLL.Instance.ThemKhachHang(newKH);
+                khachHangBLL.ThemKhachHang(newKH);
             }
-            // SỬA
             else
             {
                 kh.HoTen = txtHoTen.Text;
                 kh.CCCD = txtCCCD.Text;
                 kh.SDT = txtSDT.Text;
 
-                KhachHangBLL.Instance.UpdateKhachHang(kh);
+                khachHangBLL.UpdateKhachHang(kh);
             }
 
             this.Close();

@@ -16,28 +16,27 @@ namespace HotelManagement.GUI.Views
     /// </summary>
     public partial class KhachHangView : UserControl
     {
+        private KhachHangBLL khachHangBLL = new KhachHangBLL();
+
         public KhachHangView()
         {
             InitializeComponent();
             LoadData();
         }
 
-        // ===== LOAD DATA =====
         void LoadData()
         {
-            dgKhachHang.ItemsSource = KhachHangBLL.Instance.GetListKhachHang();
+            dgKhachHang.ItemsSource = khachHangBLL.GetListKhachHang();
         }
 
-        // ===== THÊM =====
         private void btnThemKhachHang_Click(object sender, RoutedEventArgs e)
         {
             ThemKhachHangDialog f = new ThemKhachHangDialog();
             f.ShowDialog();
 
-            LoadData(); // 🔥 cập nhật lại bảng
+            LoadData();
         }
 
-        // ===== SỬA =====
         private void btnSua_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -51,7 +50,6 @@ namespace HotelManagement.GUI.Views
             LoadData();
         }
 
-        // ===== XÓA =====
         private void btnXoa_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -66,9 +64,10 @@ namespace HotelManagement.GUI.Views
 
             if (result == MessageBoxResult.Yes)
             {
-                KhachHangBLL.Instance.DeleteKhachHang(kh.MaKhachHang);
+                khachHangBLL.DeleteKhachHang(kh.MaKhachHang);
                 LoadData();
             }
         }
     }
+
 }

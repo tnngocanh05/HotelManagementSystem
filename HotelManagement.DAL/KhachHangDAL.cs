@@ -7,18 +7,7 @@ namespace HotelManagement.DAL
 {
     public class KhachHangDAL
     {
-        private static KhachHangDAL instance;
-        public static KhachHangDAL Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new KhachHangDAL();
-                return instance;
-            }
-        }
-
-        private KhachHangDAL() { }
+        public KhachHangDAL() { }
 
         private SqlConnection GetConnection()
         {
@@ -31,8 +20,7 @@ namespace HotelManagement.DAL
         {
             List<KhachHangDTO> list = new List<KhachHangDTO>();
 
-            string query = @"SELECT MaKhachHang, HoTen, CCCD, SDT
-                         FROM KhachHang";
+            string query = @"SELECT MaKhachHang, HoTen, CCCD, SDT FROM KhachHang";
 
             using (SqlConnection conn = GetConnection())
             using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -52,22 +40,59 @@ namespace HotelManagement.DAL
         }
         #endregion
 
-        #region INSERT
-        public bool Insert(KhachHangDTO kh)
+        #region GET BY CCCD
+        public KhachHangDTO GetByCCCD(string cccd)
         {
-            string query = @"INSERT INTO KhachHang
-                        (HoTen, CCCD, SDT)
-                        VALUES
-                        (@HoTen, @CCCD, @SDT)";
+            string query = @"SELECT * FROM KhachHang WHERE CCCD = @CCCD";
 
             using (SqlConnection conn = GetConnection())
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 conn.Open();
+                cmd.Parameters.AddWithValue("@CCCD", cccd);
 
+                using (SqlDataReader rd = cmd.ExecuteReader())
+                {
+                    if (rd.Read())
+                        return MapKhachHang(rd);
+                }
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region INSERT
+        public bool Insert(KhachHangDTO kh)
+        {
+            string query = @"INSERT INTO KhachHang (HoTen, CCCD, SDT)
+                             VALUES (@HoTen, @CCCD, @SDT)";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
                 AddParams(cmd, kh);
 
                 return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+        #endregion
+
+        #region INSERT + RETURN ID
+        public int InsertAndReturnId(KhachHangDTO kh)
+        {
+            string query = @"INSERT INTO KhachHang (HoTen, CCCD, SDT)
+                             OUTPUT INSERTED.MaKhachHang
+                             VALUES (@HoTen, @CCCD, @SDT)";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+                AddParams(cmd, kh);
+
+                return (int)cmd.ExecuteScalar();
             }
         }
         #endregion
@@ -76,10 +101,10 @@ namespace HotelManagement.DAL
         public bool Update(KhachHangDTO kh)
         {
             string query = @"UPDATE KhachHang SET
-                        HoTen = @HoTen,
-                        CCCD = @CCCD,
-                        SDT = @SDT
-                        WHERE MaKhachHang = @MaKhachHang";
+                             HoTen = @HoTen,
+CCCD = @CCCD,
+                             SDT = @SDT
+                             WHERE MaKhachHang = @MaKhachHang";
 
             using (SqlConnection conn = GetConnection())
             using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -116,16 +141,15 @@ namespace HotelManagement.DAL
             List<KhachHangDTO> list = new List<KhachHangDTO>();
 
             string query = @"SELECT * FROM KhachHang
-                         WHERE HoTen LIKE @Keyword
-                            OR CCCD LIKE @Keyword
-OR SDT LIKE @Keyword";
+                             WHERE HoTen LIKE @kw
+                                OR CCCD LIKE @kw
+                                OR SDT LIKE @kw";
 
             using (SqlConnection conn = GetConnection())
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 conn.Open();
-
-                cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+                cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
                 using (SqlDataReader rd = cmd.ExecuteReader())
                 {
@@ -153,7 +177,7 @@ OR SDT LIKE @Keyword";
         }
         #endregion
 
-        #region PARAMS COMMON
+        #region PARAMS
         private void AddParams(SqlCommand cmd, KhachHangDTO kh)
         {
             cmd.Parameters.AddWithValue("@HoTen", kh.HoTen ?? (object)DBNull.Value);

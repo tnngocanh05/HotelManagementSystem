@@ -9,11 +9,13 @@ namespace HotelManagement.GUI.Dialogs
 {
     public partial class ThemDichVuDialog : Window
     {
+        public int MaDatPhong { get; set; }
         private DichVuDTO dv;
-
+        
         public ThemDichVuDialog()
         {
             InitializeComponent();
+           
         }
 
         public ThemDichVuDialog(DichVuDTO dvSua)

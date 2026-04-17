@@ -298,10 +298,10 @@ namespace HotelManagement.DAL
                         result.DanhSachDichVu.Add(new ChiTietDichVuDTO
                         {
                             MaCTDV = Convert.ToInt32(rdDV["MaCTDV"]),
-                            TenDichVu = rdDV["TenDichVu"].ToString(),
-                            LoaiDichVu = rdDV["LoaiDichVu"].ToString(),
+                            MaDatPhong = Convert.ToInt32(rdDV["MaDatPhong"]),
+                            MaDichVu = Convert.ToInt32(rdDV["MaDichVu"]),
                             SoLuong = Convert.ToInt32(rdDV["SoLuong"]),
-                            DonGia = Convert.ToDecimal(rdDV["DonGia"]),
+                           
                             ThanhTien = Convert.ToDecimal(rdDV["ThanhTien"])
                         });
                     }

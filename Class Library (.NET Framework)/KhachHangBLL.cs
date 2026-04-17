@@ -6,40 +6,31 @@ namespace HotelManagement.BLL
 {
     public class KhachHangBLL
     {
-        private static KhachHangBLL instance;
-        public static KhachHangBLL Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new KhachHangBLL();
-                return instance;
-            }
-        }
+        private KhachHangDAL khachHangDAL = new KhachHangDAL();
 
         public List<KhachHangDTO> GetListKhachHang()
         {
-            return KhachHangDAL.Instance.GetAll();
+            return khachHangDAL.GetAll();
         }
 
         public bool ThemKhachHang(KhachHangDTO kh)
         {
-            return KhachHangDAL.Instance.Insert(kh);
+            return khachHangDAL.Insert(kh);
         }
 
         public bool UpdateKhachHang(KhachHangDTO kh)
         {
-            return KhachHangDAL.Instance.Update(kh);
+            return khachHangDAL.Update(kh);
         }
 
         public bool DeleteKhachHang(int maKH)
         {
-            return KhachHangDAL.Instance.Delete(maKH);
+            return khachHangDAL.Delete(maKH);
         }
 
         public List<KhachHangDTO> SearchKhachHang(string keyword)
         {
-            return KhachHangDAL.Instance.Search(keyword);
+            return khachHangDAL.Search(keyword);
         }
     }
 }
