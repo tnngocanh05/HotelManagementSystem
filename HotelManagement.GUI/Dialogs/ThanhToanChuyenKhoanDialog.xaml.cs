@@ -1,6 +1,9 @@
 ﻿using HotelManagement.BLL;
+using QRCoder;
 using System;
+using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace HotelManagement.GUI.Dialogs
 {
@@ -11,7 +14,7 @@ namespace HotelManagement.GUI.Dialogs
         public int MaDatPhong { get; set; }
         public decimal TongTien { get; set; }
 
-        // Lồng thêm
+        // Giữ phần mày đã thêm
         public int MaNhanVienLap { get; set; }
 
         private bool daThanhToanThanhCong = false;
@@ -30,13 +33,56 @@ namespace HotelManagement.GUI.Dialogs
             txtMaDatPhong.Text = MaDatPhong.ToString();
             txtSoTien.Text = TongTien.ToString("N0") + " VNĐ";
             txtMaGiaoDich.Text = "VNPAY" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            txtTrangThai.Text = "Chưa thanh toán";
+            txtTrangThai.Text = "Trạng thái: Chờ thanh toán";
+
+            // Lồng lại phần tạo QR động
+            TaoMaQR();
+        }
+
+        // Lồng thêm lại phần QR động
+        private void TaoMaQR()
+        {
+            try
+            {
+                string duLieuQR =
+                    "VNPAY DEMO" + Environment.NewLine +
+                    "Ma giao dich: " + txtMaGiaoDich.Text + Environment.NewLine +
+                    "Ma dat phong: " + MaDatPhong + Environment.NewLine +
+                    "So tien: " + TongTien.ToString("N0") + " VND";
+
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(duLieuQR, QRCodeGenerator.ECCLevel.Q);
+                PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+
+                byte[] qrBytes = qrCode.GetGraphic(20);
+
+                using (MemoryStream ms = new MemoryStream(qrBytes))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = ms;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+
+                    imgQR.Source = bitmap;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tạo mã QR: " + ex.Message,
+                                "Thông báo lỗi",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
         }
 
         private void BtnGiaLapThanhCong_Click(object sender, RoutedEventArgs e)
         {
             daThanhToanThanhCong = true;
-            txtTrangThai.Text = "Đã thanh toán";
+            txtTrangThai.Text = "Trạng thái: Đã thanh toán";
+            btnHoanTat.IsEnabled = true;
+
             MessageBox.Show("Giả lập quét QR thành công.");
         }
 
