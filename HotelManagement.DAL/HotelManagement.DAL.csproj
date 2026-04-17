@@ -48,8 +48,10 @@
     <Compile Include="DatPhongDAL.cs" />
     <Compile Include="DBConnection.cs" />
     <Compile Include="DichVuDAL.cs" />
+    <Compile Include="DsDatPhongDAL.cs" />
     <Compile Include="HoaDonDAL.cs" />
     <Compile Include="KhachHangDAL.cs" />
+    <Compile Include="NhanVienDAL.cs" />
     <Compile Include="PhongDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

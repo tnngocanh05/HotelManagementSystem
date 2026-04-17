@@ -24,5 +24,16 @@ namespace HotelManagement.GUI
         {
             MainContent.Content = new HoaDonView();
         }
+        private void btnDanhSachDatPhong_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new DsDatPhong();
+        }
+
+        private void btnNhanVien_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new NhanVien();
+
+        }
+
     }
 }

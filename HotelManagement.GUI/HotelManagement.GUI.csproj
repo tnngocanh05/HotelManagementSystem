@@ -119,8 +119,17 @@
     <Compile Include="Dialogs\ThemDichVuDialog.xaml.cs">
       <DependentUpon>ThemDichVuDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ThemNhanVienDialog.xaml.cs">
+      <DependentUpon>ThemNhanVienDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DsDatPhong.xaml.cs">
+      <DependentUpon>DsDatPhong.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HoaDonView.xaml.cs">
       <DependentUpon>HoaDonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NhanVien.xaml.cs">
+      <DependentUpon>NhanVien.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TrangChuView.xaml.cs">
       <DependentUpon>TrangChuView.xaml</DependentUpon>
@@ -149,6 +158,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\ThemNhanVienDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,7 +178,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DsDatPhong.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\HoaDonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NhanVien.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

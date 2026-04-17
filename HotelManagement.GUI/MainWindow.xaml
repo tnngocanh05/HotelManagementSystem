@@ -30,8 +30,12 @@
                 <Button x:Name="btnPhong" Content="Phòng"/>
                 <Button x:Name="btnDichVu" Content="Dịch Vụ"/>
                 <Button x:Name="btnKhachHang" Content="Khách Hàng"/>
-                <Button x:Name="btnDanhSachDatPhong" Content="Danh sách đặt phòng"/>
-                <Button x:Name="btnNhanVien" Content="Nhân viên"/>
+                <Button x:Name="btnDanhSachDatPhong"
+                          Content="Danh sách đặt phòng"
+                          Click="btnDanhSachDatPhong_Click"/>
+                <Button x:Name="btnNhanVien"
+                          Content="Nhân viên"
+                          Click="btnNhanVien_Click"/>
                 <Button x:Name="btnHoaDon" Content="Hoá đơn"/>
                 <Button x:Name="btnThongKe" Content="Thống kê"/>
             </StackPanel>
