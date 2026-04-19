@@ -30,15 +30,6 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-
-                <Button Content="XUẤT PDF" Click="BtnXuatPDF_Click" 
-                        Padding="15,5" Background="#e67e22" Foreground="White" FontWeight="Bold">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="5"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
             </StackPanel>
 
             <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,20">

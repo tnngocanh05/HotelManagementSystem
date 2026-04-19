@@ -8,13 +8,6 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using HotelManagement.BLL;
 using System.ComponentModel;
-using Microsoft.Win32;
-// Namespace cho PDF
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Kernel.Font;
-using iText.IO.Font.Constants;
 
 namespace HotelManagement.GUI.Views
 {
@@ -37,7 +30,6 @@ namespace HotelManagement.GUI.Views
         {
             InitializeComponent();
 
-            // Cập nhật Formatter: Chia cho 1 triệu và thêm hậu tố 'tr' cho trục đứng
             YFormatter = value => (value / 1000000).ToString("N0") + "tr";
 
             DataContext = this;
@@ -66,7 +58,7 @@ namespace HotelManagement.GUI.Views
                         Values = new ChartValues<decimal>(doanhThuData.Values),
                         Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4776E6")),
                         DataLabels = true,
-                        LabelPoint = point => point.Y.ToString("N0") // Hiển thị số đầy đủ trên đầu cột
+                        LabelPoint = point => point.Y.ToString("N0")
                     }
                 };
                 Labels = doanhThuData.Keys.ToList();
@@ -98,74 +90,11 @@ namespace HotelManagement.GUI.Views
             }
             catch (Exception ex)
             {
-                // Tránh crash ứng dụng khi dữ liệu null hoặc lỗi kết nối
                 Console.WriteLine("Lỗi LoadData: " + ex.Message);
             }
         }
 
         private void BtnThongKe_Click(object sender, RoutedEventArgs e) => LoadData();
-
-        private void BtnXuatPDF_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                DateTime tuNgay = dpTuNgay.SelectedDate ?? DateTime.Now.AddDays(-10);
-                DateTime denNgay = dpDenNgay.SelectedDate ?? DateTime.Now;
-                var doanhThuData = bll.LayDoanhThuTheoKhoang(tuNgay, denNgay);
-
-                SaveFileDialog sfd = new SaveFileDialog { Filter = "PDF Files (*.pdf)|*.pdf", FileName = $"BaoCao_{DateTime.Now:yyyyMMdd}.pdf" };
-
-                if (sfd.ShowDialog() == true)
-                {
-                    using (PdfWriter writer = new PdfWriter(sfd.FileName))
-                    {
-                        using (PdfDocument pdf = new PdfDocument(writer))
-                        {
-                            Document document = new Document(pdf);
-                            PdfFont fontBold = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-
-                            // Sử dụng tường minh iText.Layout.Properties để tránh lỗi Ambiguous reference
-                            var centerAlign = iText.Layout.Properties.TextAlignment.CENTER;
-                            var rightAlign = iText.Layout.Properties.TextAlignment.RIGHT;
-
-                            document.Add(new iText.Layout.Element.Paragraph("BAO CAO DOANH THU")
-                                .SetFont(fontBold).SetFontSize(18)
-                                .SetTextAlignment(centerAlign));
-
-                            document.Add(new iText.Layout.Element.Paragraph($"Thoi gian: {tuNgay:dd/MM/yyyy} - {denNgay:dd/MM/yyyy}")
-                                .SetTextAlignment(centerAlign));
-
-                            document.Add(new iText.Layout.Element.Paragraph("\n"));
-
-                            // Tạo bảng với độ rộng cột đều nhau
-                            Table table = new Table(iText.Layout.Properties.UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
-
-                            table.AddHeaderCell(new Cell().Add(new iText.Layout.Element.Paragraph("Ngay").SetFont(fontBold)));
-                            table.AddHeaderCell(new Cell().Add(new iText.Layout.Element.Paragraph("Doanh thu (VND)").SetFont(fontBold)));
-
-                            decimal tong = 0;
-                            foreach (var data in doanhThuData)
-                            {
-                                table.AddCell(new Cell().Add(new iText.Layout.Element.Paragraph(data.Key)));
-                                table.AddCell(new Cell().Add(new iText.Layout.Element.Paragraph(data.Value.ToString("N0"))));
-                                tong += data.Value;
-                            }
-                            document.Add(table);
-
-                            document.Add(new iText.Layout.Element.Paragraph($"\nTONG CONG: {tong.ToString("N0")} VND")
-                                .SetFont(fontBold).SetTextAlignment(rightAlign));
-
-                            document.Close();
-                        }
-                    }
-                    MessageBox.Show("Xuất PDF báo cáo thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi xuất PDF: " + ex.Message, "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
