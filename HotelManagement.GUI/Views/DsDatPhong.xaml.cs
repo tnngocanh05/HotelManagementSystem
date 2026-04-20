@@ -1,10 +1,10 @@
-﻿
-using HotelManagement.DTO;
+﻿using HotelManagement.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Class_Library__.NET_Framework_; // 🔥 THÊM DÒNG NÀY
 
 namespace HotelManagement.GUI.Views
 {
@@ -20,29 +20,10 @@ namespace HotelManagement.GUI.Views
 
         // ================= LOAD DATA =================
 
-        private void LoadData()
+        public void LoadData()
         {
-            listAll = new List<DsDatPhongDTO>()
-            {
-                new DsDatPhongDTO
-                {
-                    MaDatPhong = 1,
-                    MaKhachHang = 101,
-                    MaPhong = 201,
-                    ThoiGianNhan = DateTime.Now,
-                    NgayTraDuKien = DateTime.Now.AddDays(1),
-                    TrangThai = "Đã đặt"
-                },
-                new DsDatPhongDTO
-                {
-                    MaDatPhong = 2,
-                    MaKhachHang = 102,
-                    MaPhong = 202,
-                    ThoiGianNhan = DateTime.Now,
-                    NgayTraDuKien = DateTime.Now.AddDays(2),
-                    TrangThai = "Đang ở"
-                }
-            };
+            // 🔥 SỬA CHỖ NÀY: lấy từ BLL thay vì hard-code
+            listAll = DsDatPhongBLL.Instance.GetList();
 
             dgDatPhong.ItemsSource = listAll;
         }
@@ -88,7 +69,6 @@ namespace HotelManagement.GUI.Views
 
             var result = listAll.Where(x =>
             {
-                // 🔎 SEARCH
                 bool matchSearch =
                     string.IsNullOrWhiteSpace(keyword) ||
                     keyword == "tên, sdt, số phòng..." ||
@@ -96,13 +76,11 @@ namespace HotelManagement.GUI.Views
                     x.MaKhachHang.ToString().Contains(keyword) ||
                     x.MaPhong.ToString().Contains(keyword);
 
-                // 📌 TRẠNG THÁI
                 bool matchTrangThai =
                     trangThai == "Tất cả" ||
                     string.IsNullOrEmpty(trangThai) ||
                     x.TrangThai == trangThai;
 
-                // 📅 DATE
                 bool matchDate = true;
 
                 if (fromDate != null)
