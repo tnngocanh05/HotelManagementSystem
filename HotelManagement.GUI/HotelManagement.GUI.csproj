@@ -119,6 +119,25 @@
     <Compile Include="Dialogs\ThemDichVuDialog.xaml.cs">
       <DependentUpon>ThemDichVuDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="admin\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="admin\PhongWindow.xaml.cs">
+      <DependentUpon>PhongWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="admin\SuaPhongWindow.xaml.cs">
+      <DependentUpon>SuaPhongWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="admin\ThemPhongWindow.xaml.cs">
+      <DependentUpon>ThemPhongWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\HoaDonPage.xaml.cs">
+      <DependentUpon>HoaDonPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PlaceholderPage.cs" />
+    <Compile Include="Pages\TrangChuPage.xaml.cs">
+      <DependentUpon>TrangChuPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HoaDonView.xaml.cs">
       <DependentUpon>HoaDonView.xaml</DependentUpon>
     </Compile>
@@ -149,9 +168,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="admin\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="admin\PhongWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="admin\SuaPhongWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="admin\ThemPhongWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\HoaDonPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\TrangChuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

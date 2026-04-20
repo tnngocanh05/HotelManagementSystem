@@ -10,5 +10,7 @@ namespace HotelManagement.DTO
         public int Tang { get; set; }
         public int MaLoaiPhong { get; set; }
         public string TenLoaiPhong { get; set; }
+        public int SoNguoiToiDa { get; set; }
+        public decimal GiaTien { get; set; }
     }
 }

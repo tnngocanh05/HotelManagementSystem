@@ -1,0 +1,96 @@
+<Page x:Class="HotelManagement.GUI.admin.PhongWindow"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      Background="#FFF5F7FB"
+      Title="Quản lý phòng">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Padding="20"
+                Background="White"
+                CornerRadius="12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock FontSize="28"
+                               FontWeight="SemiBold"
+                               Foreground="#1F2937"
+                               Text="Quản lý phòng" />
+                    <TextBlock Margin="0,6,0,0"
+                               Foreground="#6B7280"
+                               Text="Danh sách phòng và thao tác thêm, sửa, xóa." />
+                </StackPanel>
+
+                <Button Width="140"
+                        Height="40"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Click="BtnThemPhong_Click"
+                        Content="Thêm phòng"
+                        Background="#0F766E"
+                        Foreground="White"
+                        BorderBrush="#0F766E"
+                        FontWeight="SemiBold" />
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Row="2"
+                Padding="16"
+                Background="White"
+                CornerRadius="12">
+            <DataGrid x:Name="dgPhong"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      RowHeaderWidth="0"
+                      SelectionMode="Single"
+                      GridLinesVisibility="Horizontal"
+                      Background="White"
+                      BorderThickness="0"
+                      RowBackground="White"
+                      AlternatingRowBackground="#FFF8FAFC"
+                      HorizontalGridLinesBrush="#FFE5E7EB"
+                      VerticalGridLinesBrush="#FFE5E7EB">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Phòng" Binding="{Binding SoPhong}" Width="*" />
+                    <DataGridTextColumn Header="Loại" Binding="{Binding TenLoaiPhong}" Width="1.4*" />
+                    <DataGridTextColumn Header="Tối đa" Binding="{Binding SoNguoiToiDa}" Width="*" />
+                    <DataGridTextColumn Header="Giá" Binding="{Binding GiaTien, StringFormat={}{0:N0} VNĐ}" Width="1.2*" />
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding TinhTrang}" Width="*" />
+                    <DataGridTemplateColumn Header="Hoạt động" Width="1.4*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Width="64"
+                                            Margin="0,0,8,0"
+                                            Padding="10,4"
+                                            Click="BtnSua_Click"
+                                            Content="Sửa"
+                                            Tag="{Binding}"
+                                            Background="#2563EB"
+                                            Foreground="White"
+                                            BorderBrush="#2563EB" />
+                                    <Button Width="64"
+                                            Padding="10,4"
+                                            Click="BtnXoa_Click"
+                                            Content="Xóa"
+                                            Tag="{Binding}"
+                                            Background="#DC2626"
+                                            Foreground="White"
+                                            BorderBrush="#DC2626" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</Page>

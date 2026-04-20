@@ -27,7 +27,7 @@
 
                 <Button x:Name="btnTrangChu" Content="Trang chủ"/>
                 <Button x:Name="btnLoaiPhong" Content=" Loại Phòng"/>
-                <Button x:Name="btnPhong" Content="Phòng"/>
+                <Button x:Name="btnPhong" Content="Quản lý phòng"/>
                 <Button x:Name="btnDichVu" Content="Dịch Vụ"/>
                 <Button x:Name="btnKhachHang" Content="Khách Hàng"/>
                 <Button x:Name="btnDanhSachDatPhong" Content="Danh sách đặt phòng"/>
@@ -61,7 +61,9 @@
                     Background="White"
                     Margin="10,5,10,10"
                     CornerRadius="8">
-                <ContentControl x:Name="MainContent"/>
+                <Frame x:Name="MainFrame"
+                       NavigationUIVisibility="Hidden"
+                       Background="Transparent" />
             </Border>
         </Grid>
     </Grid>
