@@ -1,7 +1,8 @@
 ﻿using HotelManagement.DTO;
 using System.Collections.Generic;
 using HotelManagement.DAL;
-using HotelManagement.DTO;
+using System.Data;
+
 public class NhanVienBLL
 {
     private static NhanVienBLL instance;
@@ -33,5 +34,10 @@ public class NhanVienBLL
     public bool DeleteNhanVien(int maNV)
     {
         return NhanVienDAL.Instance.Delete(maNV);
+    }
+
+    public DataTable GetChucVu()
+    {
+        return NhanVienDAL.Instance.GetChucVu();
     }
 }

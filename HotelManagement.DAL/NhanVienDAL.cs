@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using HotelManagement.DTO;
+using System.Data;
 
 namespace HotelManagement.DAL
 {
@@ -147,6 +148,26 @@ namespace HotelManagement.DAL
         }
         #endregion
 
+        #region GET CHUC VU
+        public DataTable GetChucVu()
+        {
+            DataTable dt = new DataTable();
+
+            string query = "SELECT MaChucVu, TenChucVu FROM dbo.ChucVu";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+        #endregion
+
         #region MAPPING
         private NhanVienDTO MapNhanVien(SqlDataReader rd)
         {
@@ -177,4 +198,6 @@ namespace HotelManagement.DAL
         }
         #endregion
     }
+
+
 }

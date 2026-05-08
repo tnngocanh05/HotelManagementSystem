@@ -1,5 +1,6 @@
 ﻿using HotelManagement.DTO;
 using System;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,18 +8,14 @@ namespace HotelManagement.GUI.Dialogs
 {
     public partial class ThemNhanVienDialog : Window
     {
-        private NhanVienDTO nv; // dùng cho sửa
+        private NhanVienDTO nv;
 
-        // ================= CONSTRUCTOR =================
-
-        // 👉 THÊM
         public ThemNhanVienDialog()
         {
             InitializeComponent();
             LoadChucVu();
         }
 
-        // 👉 SỬA
         public ThemNhanVienDialog(NhanVienDTO nv)
         {
             InitializeComponent();
@@ -28,15 +25,21 @@ namespace HotelManagement.GUI.Dialogs
             LoadData();
         }
 
-        // ================= LOAD =================
-
         void LoadChucVu()
         {
-            // ⚠ nếu chưa có ChucVuBUS thì tạm hardcode
             cbChucVu.Items.Clear();
-            cbChucVu.Items.Add("1");
-            cbChucVu.Items.Add("2");
-            cbChucVu.Items.Add("3");
+
+            DataTable dt = NhanVienBLL.Instance.GetChucVu();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Content = row["TenChucVu"].ToString();
+                item.Tag = row["MaChucVu"];
+
+                cbChucVu.Items.Add(item);
+            }
+
             cbChucVu.SelectedIndex = 0;
         }
 
@@ -57,10 +60,17 @@ namespace HotelManagement.GUI.Dialogs
             txtEmail.Text = nv.Email;
 
             if (nv.MaChucVu != null)
-                cbChucVu.SelectedItem = nv.MaChucVu.ToString();
+            {
+                foreach (ComboBoxItem item in cbChucVu.Items)
+                {
+                    if (item.Tag.ToString() == nv.MaChucVu.ToString())
+                    {
+                        cbChucVu.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
         }
-
-        // ================= LƯU =================
 
         private void btnLuu_Click(object sender, RoutedEventArgs e)
         {
@@ -70,24 +80,20 @@ namespace HotelManagement.GUI.Dialogs
 
                 nvMoi.HoTen = txtHoTen.Text;
                 nvMoi.NgaySinh = dpNgaySinh.SelectedDate ?? DateTime.Now;
-
-                nvMoi.GioiTinh = (cbGioiTinh.SelectedItem as ComboBoxItem)
-                                    ?.Content.ToString();
-
+                nvMoi.GioiTinh = (cbGioiTinh.SelectedItem as ComboBoxItem)?.Content.ToString();
                 nvMoi.SDT = txtSDT.Text;
                 nvMoi.CCCD = txtCCCD.Text;
                 nvMoi.Email = txtEmail.Text;
 
-                nvMoi.MaChucVu = int.Parse(cbChucVu.SelectedItem.ToString());
+                ComboBoxItem item = cbChucVu.SelectedItem as ComboBoxItem;
+                nvMoi.MaChucVu = Convert.ToInt32(item.Tag);
 
                 bool kq;
 
-                // 👉 THÊM
                 if (nv == null)
                 {
                     kq = NhanVienBLL.Instance.ThemNhanVien(nvMoi);
                 }
-                // 👉 SỬA
                 else
                 {
                     nvMoi.MaNV = nv.MaNV;
@@ -103,8 +109,6 @@ namespace HotelManagement.GUI.Dialogs
                 MessageBox.Show("Lỗi: " + ex.Message);
             }
         }
-
-        // ================= HỦY =================
 
         private void btnHuy_Click(object sender, RoutedEventArgs e)
         {
