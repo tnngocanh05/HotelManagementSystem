@@ -119,6 +119,9 @@
     <Compile Include="Dialogs\ThemDichVuDialog.xaml.cs">
       <DependentUpon>ThemDichVuDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Login\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HoaDonView.xaml.cs">
       <DependentUpon>HoaDonView.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ThemDichVuDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
