@@ -1,4 +1,5 @@
 ﻿using HotelManagement.BLL;
+using HotelManagement.GUI.Dialogs;
 using System;
 using System.Windows;
 
@@ -8,6 +9,7 @@ namespace HotelManagement.GUI.Dialogs
     {
         private HoaDonBLL hoaDonBLL = new HoaDonBLL();
         private NhanVienBLL nhanVienBLL = new NhanVienBLL();
+        private DenBuBLL denBuBLL = new DenBuBLL();
 
         public int MaDatPhong { get; set; }
 
@@ -16,11 +18,17 @@ namespace HotelManagement.GUI.Dialogs
         public ThanhToanDialog()
         {
             InitializeComponent();
+
             Loaded += ThanhToanDialog_Loaded;
+
             btnDong.Click += BtnDong_Click;
             btnTinhTienThua.Click += BtnTinhTienThua_Click;
             btnXacNhan.Click += BtnXacNhan_Click;
+
             cbPhuongThuc.SelectionChanged += CbPhuongThuc_SelectionChanged;
+
+            // Lồng thêm
+            btnKiemTraPhong.Click += BtnKiemTraPhong_Click;
         }
 
         private void ThanhToanDialog_Loaded(object sender, RoutedEventArgs e)
@@ -28,16 +36,28 @@ namespace HotelManagement.GUI.Dialogs
             txtMaDatPhong.Text = MaDatPhong.ToString();
 
             decimal tienPhong = hoaDonBLL.TinhTienPhong(MaDatPhong);
+
             decimal tienDichVu = hoaDonBLL.TinhTienDichVu(MaDatPhong);
-            tongTien = tienPhong + tienDichVu;
+
+            // Lồng thêm
+            decimal tienDenBu = denBuBLL.TinhTienDenBu(MaDatPhong);
+
+            tongTien = tienPhong + tienDichVu + tienDenBu;
 
             txtTienPhong.Text = tienPhong.ToString("N0");
+
             txtTienDichVu.Text = tienDichVu.ToString("N0");
+
+            // Lồng thêm
+            txtTienDenBu.Text = tienDenBu.ToString("N0");
+
             txtTongTien.Text = tongTien.ToString("N0");
 
             cbPhuongThuc.Items.Clear();
+
             cbPhuongThuc.Items.Add("Tiền mặt");
             cbPhuongThuc.Items.Add("Chuyển khoản");
+
             cbPhuongThuc.SelectedIndex = 0;
 
             // Lồng thêm
@@ -48,7 +68,9 @@ namespace HotelManagement.GUI.Dialogs
         private void LoadNhanVien()
         {
             cbNhanVien.ItemsSource = nhanVienBLL.GetAllNhanVien();
+
             cbNhanVien.DisplayMemberPath = "HoTen";
+
             cbNhanVien.SelectedValuePath = "MaNhanVien";
 
             if (cbNhanVien.Items.Count > 0)
@@ -57,31 +79,70 @@ namespace HotelManagement.GUI.Dialogs
 
         private void CbPhuongThuc_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            bool laTienMat = cbPhuongThuc.SelectedItem != null &&
-                             cbPhuongThuc.SelectedItem.ToString() == "Tiền mặt";
+            bool laTienMat =
+                cbPhuongThuc.SelectedItem != null &&
+                cbPhuongThuc.SelectedItem.ToString() == "Tiền mặt";
 
-            lblTienKhachDua.Visibility = laTienMat ? Visibility.Visible : Visibility.Collapsed;
-            txtTienKhachDua.Visibility = laTienMat ? Visibility.Visible : Visibility.Collapsed;
-            btnTinhTienThua.Visibility = laTienMat ? Visibility.Visible : Visibility.Collapsed;
+            lblTienKhachDua.Visibility =
+                laTienMat ? Visibility.Visible : Visibility.Collapsed;
+
+            txtTienKhachDua.Visibility =
+                laTienMat ? Visibility.Visible : Visibility.Collapsed;
+
+            btnTinhTienThua.Visibility =
+                laTienMat ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void BtnTinhTienThua_Click(object sender, RoutedEventArgs e)
         {
             decimal tienKhachDua;
+
             if (!decimal.TryParse(txtTienKhachDua.Text, out tienKhachDua))
             {
                 MessageBox.Show("Tiền khách đưa không hợp lệ.");
+
                 return;
             }
 
             if (tienKhachDua < tongTien)
             {
                 MessageBox.Show("Tiền khách đưa không đủ.");
+
                 return;
             }
 
             decimal tienThua = tienKhachDua - tongTien;
-            MessageBox.Show("Tiền trả lại khách: " + tienThua.ToString("N0") + " VNĐ");
+
+            MessageBox.Show(
+                "Tiền trả lại khách: "
+                + tienThua.ToString("N0")
+                + " VNĐ");
+        }
+
+        // Lồng thêm
+        private void BtnKiemTraPhong_Click(object sender, RoutedEventArgs e)
+        {
+            KiemTraPhongDialog dlg = new KiemTraPhongDialog();
+
+            dlg.MaDatPhong = MaDatPhong;
+
+            bool? result = dlg.ShowDialog();
+
+            // Reload tiền đền bù sau khi lưu
+            if (result == true)
+            {
+                decimal tienPhong = hoaDonBLL.TinhTienPhong(MaDatPhong);
+
+                decimal tienDichVu = hoaDonBLL.TinhTienDichVu(MaDatPhong);
+
+                decimal tienDenBu = denBuBLL.TinhTienDenBu(MaDatPhong);
+
+                tongTien = tienPhong + tienDichVu + tienDenBu;
+
+                txtTienDenBu.Text = tienDenBu.ToString("N0");
+
+                txtTongTien.Text = tongTien.ToString("N0");
+            }
         }
 
         private void BtnXacNhan_Click(object sender, RoutedEventArgs e)
@@ -91,32 +152,40 @@ namespace HotelManagement.GUI.Dialogs
                 if (cbPhuongThuc.SelectedItem == null)
                 {
                     MessageBox.Show("Vui lòng chọn phương thức thanh toán.");
+
                     return;
                 }
 
                 if (cbNhanVien.SelectedValue == null)
                 {
                     MessageBox.Show("Vui lòng chọn nhân viên thanh toán.");
+
                     return;
                 }
 
-                int maNhanVienLap = Convert.ToInt32(cbNhanVien.SelectedValue);
-                string phuongThuc = cbPhuongThuc.SelectedItem.ToString();
+                int maNhanVienLap =
+                    Convert.ToInt32(cbNhanVien.SelectedValue);
+
+                string phuongThuc =
+                    cbPhuongThuc.SelectedItem.ToString();
 
                 if (phuongThuc == "Tiền mặt")
                 {
                     decimal? tienKhachDua = null;
+
                     decimal value;
 
                     if (!decimal.TryParse(txtTienKhachDua.Text, out value))
                     {
                         MessageBox.Show("Tiền khách đưa không hợp lệ.");
+
                         return;
                     }
 
                     tienKhachDua = value;
 
                     string message;
+
                     bool result = hoaDonBLL.ThanhToan(
                         MaDatPhong,
                         phuongThuc,
@@ -129,23 +198,26 @@ namespace HotelManagement.GUI.Dialogs
                     if (result)
                     {
                         DialogResult = true;
+
                         Close();
                     }
                 }
                 else if (phuongThuc == "Chuyển khoản")
                 {
-                    ThanhToanChuyenKhoanDialog dlg = new ThanhToanChuyenKhoanDialog
-                    {
-                        MaDatPhong = MaDatPhong,
-                        TongTien = tongTien,
-                        MaNhanVienLap = maNhanVienLap
-                    };
+                    ThanhToanChuyenKhoanDialog dlg =
+                        new ThanhToanChuyenKhoanDialog
+                        {
+                            MaDatPhong = MaDatPhong,
+                            TongTien = tongTien,
+                            MaNhanVienLap = maNhanVienLap
+                        };
 
                     bool? result = dlg.ShowDialog();
 
                     if (result == true)
                     {
                         DialogResult = true;
+
                         Close();
                     }
                 }

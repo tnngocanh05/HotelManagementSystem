@@ -110,6 +110,9 @@
     <Compile Include="Dialogs\DatPhongDialog.xaml.cs">
       <DependentUpon>DatPhongDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\KiemTraPhongDialog.xaml.cs">
+      <DependentUpon>KiemTraPhongDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\ThanhToanChuyenKhoanDialog.xaml.cs">
       <DependentUpon>ThanhToanChuyenKhoanDialog.xaml</DependentUpon>
     </Compile>
@@ -134,6 +137,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\DatPhongDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\KiemTraPhongDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
