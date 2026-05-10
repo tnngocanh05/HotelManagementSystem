@@ -8,10 +8,10 @@
         ResizeMode="NoResize"
         Background="#F4F8FB">
 
-    <Grid>
+    <Grid Height="420" VerticalAlignment="Top">
 
         <Border Width="420"
-                Height="320"
+                Height="400"
                 Background="White"
                 CornerRadius="18"
                 Padding="30"
