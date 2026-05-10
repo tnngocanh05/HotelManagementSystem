@@ -2,43 +2,72 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using HotelManagement.DTO;
+using System.Data;
 
 namespace HotelManagement.DAL
 {
     public class NhanVienDAL
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLyKhachSan;Integrated Security=True";
+        // 🔥 Singleton
+        private static NhanVienDAL instance;
+        public static NhanVienDAL Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new NhanVienDAL();
+                return instance;
+            }
+        }
 
-        public List<NhanVienDTO> LayDanhSach()
+        private NhanVienDAL() { }
+
+        // 🔥 Sửa lại dùng DBConnection
+        private SqlConnection GetConnection()
+        {
+            DBConnection db = new DBConnection();
+            return db.GetConnection();
+        }
+
+        #region GET ALL
+        public List<NhanVienDTO> GetAll()
         {
             List<NhanVienDTO> list = new List<NhanVienDTO>();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+
+            string query = @"SELECT MaNhanVien, HoTen, NgaySinh, GioiTinh,
+                                    SDT, CCCD, Email, MaChucVu
+                             FROM NhanVien";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 string sql = "SELECT * FROM NhanVien";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 conn.Open();
-                SqlDataReader dr = cmd.ExecuteReader();
-                while (dr.Read())
+
+                using (SqlDataReader rd = cmd.ExecuteReader())
                 {
-                    list.Add(new NhanVienDTO
+                    while (rd.Read())
                     {
-                        MaNhanVien = (int)dr["MaNhanVien"],
-                        HoTen = dr["HoTen"].ToString(),
-                        NgaySinh = Convert.ToDateTime(dr["NgaySinh"]),
-                        GioiTinh = dr["GioiTinh"].ToString(),
-                        SDT = dr["SDT"].ToString(),
-                        CCCD = dr["CCCD"].ToString(),
-                        Email = dr["Email"].ToString(),
-                        MaChucVu = (int)dr["MaChucVu"]
-                    });
+                        list.Add(MapNhanVien(rd));
+                    }
                 }
             }
+
             return list;
         }
+        #endregion
 
-        public bool Them(NhanVienDTO nv)
+        #region INSERT
+        public bool Insert(NhanVienDTO nv)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            string query = @"INSERT INTO NhanVien
+                            (HoTen, NgaySinh, GioiTinh, SDT, CCCD, Email, MaChucVu)
+                            VALUES
+                            (@HoTen, @NgaySinh, @GioiTinh, @SDT, @CCCD, @Email, @MaChucVu)";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 string sql = "INSERT INTO NhanVien (HoTen, NgaySinh, GioiTinh, SDT, CCCD, Email, MaChucVu) " +
                              "VALUES (@ten, @ns, @gt, @sdt, @cccd, @mail, @maCV)";
@@ -51,13 +80,29 @@ namespace HotelManagement.DAL
                 cmd.Parameters.AddWithValue("@mail", nv.Email);
                 cmd.Parameters.AddWithValue("@maCV", nv.MaChucVu);
                 conn.Open();
+
+                AddParams(cmd, nv);
+
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        #endregion
 
-        public bool Sua(NhanVienDTO nv)
+        #region UPDATE
+        public bool Update(NhanVienDTO nv)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            string query = @"UPDATE NhanVien SET
+                            HoTen = @HoTen,
+                            NgaySinh = @NgaySinh,
+                            GioiTinh = @GioiTinh,
+                            SDT = @SDT,
+                            CCCD = @CCCD,
+                            Email = @Email,
+                            MaChucVu = @MaChucVu
+                            WHERE MaNhanVien = @MaNhanVien";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 string sql = "UPDATE NhanVien SET HoTen=@ten, NgaySinh=@ns, GioiTinh=@gt, SDT=@sdt, " +
                              "CCCD=@cccd, Email=@mail, MaChucVu=@maCV WHERE MaNhanVien=@ma";
@@ -71,20 +116,114 @@ namespace HotelManagement.DAL
                 cmd.Parameters.AddWithValue("@maCV", nv.MaChucVu);
                 cmd.Parameters.AddWithValue("@ma", nv.MaNhanVien);
                 conn.Open();
+
+                cmd.Parameters.AddWithValue("@MaNhanVien", nv.MaNV);
+                AddParams(cmd, nv);
+
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        #endregion
 
-        public bool Xoa(int ma)
+        #region DELETE
+        public bool Delete(int maNV)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            string query = @"DELETE FROM NhanVien WHERE MaNhanVien = @MaNV";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 string sql = "DELETE FROM NhanVien WHERE MaNhanVien=@ma";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@ma", ma);
                 conn.Open();
+                cmd.Parameters.AddWithValue("@MaNV", maNV);
+
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        #endregion
+
+        #region SEARCH
+        public List<NhanVienDTO> Search(string keyword)
+        {
+            List<NhanVienDTO> list = new List<NhanVienDTO>();
+
+            string query = @"SELECT * FROM NhanVien
+                             WHERE HoTen LIKE @Keyword
+                                OR SDT LIKE @Keyword
+                                OR Email LIKE @Keyword";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+
+                cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+
+                using (SqlDataReader rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        list.Add(MapNhanVien(rd));
+                    }
+                }
+            }
+
+            return list;
+        }
+        #endregion
+
+        #region GET CHUC VU
+        public DataTable GetChucVu()
+        {
+            DataTable dt = new DataTable();
+
+            string query = "SELECT MaChucVu, TenChucVu FROM dbo.ChucVu";
+
+            using (SqlConnection conn = GetConnection())
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+        #endregion
+
+        #region MAPPING
+        private NhanVienDTO MapNhanVien(SqlDataReader rd)
+        {
+            return new NhanVienDTO
+            {
+                MaNV = Convert.ToInt32(rd["MaNhanVien"]),
+                HoTen = rd["HoTen"].ToString(),
+                NgaySinh = rd["NgaySinh"] == DBNull.Value ? null : (DateTime?)rd["NgaySinh"],
+                GioiTinh = rd["GioiTinh"].ToString(),
+                SDT = rd["SDT"].ToString(),
+                CCCD = rd["CCCD"].ToString(),
+                Email = rd["Email"].ToString(),
+                MaChucVu = rd["MaChucVu"] == DBNull.Value ? null : (int?)rd["MaChucVu"]
+            };
+        }
+        #endregion
+
+        #region PARAMS
+        private void AddParams(SqlCommand cmd, NhanVienDTO nv)
+        {
+            cmd.Parameters.AddWithValue("@HoTen", nv.HoTen ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@NgaySinh", (object)nv.NgaySinh ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@GioiTinh", nv.GioiTinh ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@SDT", nv.SDT ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@CCCD", nv.CCCD ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Email", nv.Email ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@MaChucVu", (object)nv.MaChucVu ?? DBNull.Value);
+        }
+        #endregion
     }
+
+
 }

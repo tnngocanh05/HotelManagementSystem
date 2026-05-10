@@ -5,36 +5,41 @@ using HotelManagement.DTO;
 
 namespace HotelManagement.BLL
 {
-    public class NhanVienBLL
+public class NhanVienBLL
+{
+    private static NhanVienBLL instance;
+    public static NhanVienBLL Instance
     {
-        private NhanVienDAL dal = new NhanVienDAL();
-
-        // Lấy toàn bộ danh sách nhân viên
-        public List<NhanVienDTO> LayTatCa()
+        get
         {
-            return dal.LayDanhSach();
+            if (instance == null)
+                instance = new NhanVienBLL();
+            return instance;
         }
+    }
 
-        // Thêm nhân viên mới
-        public bool Them(NhanVienDTO nv)
-        {
-            // Bạn có thể thêm các logic kiểm tra ở đây trước khi gọi DAL
-            // Ví dụ: Kiểm tra tên không được để trống
-            if (string.IsNullOrWhiteSpace(nv.HoTen)) return false;
+    public List<NhanVienDTO> GetListNhanVien()
+    {
+        return NhanVienDAL.Instance.GetAll();
+    }
 
-            return dal.Them(nv);
-        }
+    public bool ThemNhanVien(NhanVienDTO nv)
+    {
+        return NhanVienDAL.Instance.Insert(nv);
+    }
 
-        // Sửa thông tin nhân viên
-        public bool Sua(NhanVienDTO nv)
-        {
-            return dal.Sua(nv);
-        }
+    public bool UpdateNhanVien(NhanVienDTO nv)
+    {
+        return NhanVienDAL.Instance.Update(nv);
+    }
 
-        // Xóa nhân viên theo Mã
-        public bool Xoa(int ma)
-        {
-            return dal.Xoa(ma);
-        }
+    public bool DeleteNhanVien(int maNV)
+    {
+        return NhanVienDAL.Instance.Delete(maNV);
+    }
+
+    public DataTable GetChucVu()
+    {
+        return NhanVienDAL.Instance.GetChucVu();
     }
 }
